@@ -1,0 +1,12 @@
+CREATE TABLE playlist_songs(
+
+id UUID PRIMARY KEY,
+playlist_id UUID  NOT NULL REFERENCES playlists(id) ON DELETE CASCADE,
+song_id UUID  NOT NULL REFERENCES songs(id) ON DELETE CASCADE,
+position INT NOT NULL,
+
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+unique(playlist_id,song_id)
+);
