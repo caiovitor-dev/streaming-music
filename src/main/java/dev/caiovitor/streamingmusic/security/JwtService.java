@@ -53,6 +53,23 @@ public class JwtService {
                 .compact();
     }
 
+    public UUID extractId(String token){
+        return extractClaim(token,claims -> claims.get("id", UUID.class));
+    }
+
+    public String extractName(String token){
+        return extractClaim(token,claims -> claims.get("name", String.class));
+    }
+
+    public String extractEmail(String token){
+        return extractClaim(token,claims -> claims.get("email", String.class));
+    }
+
+    public String extractRole(String token){
+        return extractClaim(token,claims -> claims.get("role", String.class));
+    }
+
+
     private <T> T extractClaim(String token, Function<Claims,T> claimsResolver){
 
         Claims claims = extractAllClaims(token);
