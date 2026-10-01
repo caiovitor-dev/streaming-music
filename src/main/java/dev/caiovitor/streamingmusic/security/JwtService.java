@@ -92,5 +92,7 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-   
+    public boolean isTokenValid(String token,String email){
+        return extractEmail(token).equals(email) && !isTokenExpired(token);
+    }
 }
