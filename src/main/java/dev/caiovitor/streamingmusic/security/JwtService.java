@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 
 @Component
@@ -49,5 +51,20 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis()+jwtExpiration))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    private <T> T extractClaim(String token, Function<Claims,T> claimsResolver){
+
+        Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
