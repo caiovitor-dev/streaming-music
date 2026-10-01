@@ -73,7 +73,6 @@ public class JwtService {
         return extractClaim(token,Claims::getExpiration);
     }
 
-
     private <T> T extractClaim(String token, Function<Claims,T> claimsResolver){
 
         Claims claims = extractAllClaims(token);
@@ -88,4 +87,10 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
+    public Boolean isTokenExpired(String token){
+        return extractExpiration(token).before(new Date());
+    }
+
+   
 }
