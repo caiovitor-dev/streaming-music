@@ -1,12 +1,19 @@
 package dev.caiovitor.streamingmusic.service;
 
+import dev.caiovitor.streamingmusic.dto.LoginRequestDTO;
+import dev.caiovitor.streamingmusic.dto.LoginResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserCreateDTO;
 import dev.caiovitor.streamingmusic.entity.Role;
 import dev.caiovitor.streamingmusic.entity.User;
 import dev.caiovitor.streamingmusic.exception.EmailAlreadyExistsException;
 import dev.caiovitor.streamingmusic.exception.RoleNotFoundException;
 import dev.caiovitor.streamingmusic.mapper.UserMapper;
+import dev.caiovitor.streamingmusic.security.CustomUserDetails;
+import dev.caiovitor.streamingmusic.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +28,8 @@ public class AuthenticationService {
     private final UserService userService;
     private final RoleService roleService;
     private final UserMapper userMapper;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
 
     public User registerUser(UserCreateDTO userRegister){
@@ -37,6 +46,22 @@ public class AuthenticationService {
         user.setPassword(encode);
 
         return userService.creatUser(user);
+    }
+
+    public LoginResponseDTO login(LoginRequestDTO loginRequest){
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.email(),
+                        loginRequest.password()
+                )
+        );
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String token = jwtService.generateAccessToken(userDetails.getUser());
+
+        return new LoginResponseDTO(token);
+
     }
 
 

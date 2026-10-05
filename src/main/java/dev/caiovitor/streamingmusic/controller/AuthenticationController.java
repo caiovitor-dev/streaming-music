@@ -1,6 +1,8 @@
 package dev.caiovitor.streamingmusic.controller;
 
 
+import dev.caiovitor.streamingmusic.dto.LoginRequestDTO;
+import dev.caiovitor.streamingmusic.dto.LoginResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserCreateDTO;
 import dev.caiovitor.streamingmusic.entity.User;
 import dev.caiovitor.streamingmusic.mapper.UserMapper;
@@ -35,5 +37,14 @@ public class AuthenticationController {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest){
+
+        LoginResponseDTO response = authenticationService.login(loginRequest);
+        return ResponseEntity.ok(response);
     }
 }
