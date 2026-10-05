@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.security;
 
+import dev.caiovitor.streamingmusic.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -30,16 +31,14 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(UUID id,String name,String email, String role){
+    public String generateAccessToken(User user){
 
         Map<String,Object> claims = new HashMap<>();
 
-        claims.put("id",id);
-        claims.put("name",name);
-        claims.put("email",email);
-        claims.put("role",role);
+        claims.put("id",user.getId());
+        claims.put("name",user.getName());
 
-        return createToken(claims,email);
+        return createToken(claims,user.getEmail());
 
     }
 
@@ -61,14 +60,10 @@ public class JwtService {
         return extractClaim(token,claims -> claims.get("name", String.class));
     }
 
-    public String extractEmail(String token){
-        return extractClaim(token,claims -> claims.get("email", String.class));
+    public String extractUsername(String token){
+        return extractClaim(token,Claims::getSubject);
     }
-
-    public String extractRole(String token){
-        return extractClaim(token,claims -> claims.get("role", String.class));
-    }
-
+    
     public Date extractExpiration(String token){
         return extractClaim(token,Claims::getExpiration);
     }
@@ -93,6 +88,6 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token,String email){
-        return extractEmail(token).equals(email) && !isTokenExpired(token);
+        return extractUsername(token).equals(email) && !isTokenExpired(token);
     }
 }
