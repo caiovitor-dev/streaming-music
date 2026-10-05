@@ -1,4 +1,6 @@
 package dev.caiovitor.streamingmusic.dto;
 
-public class LoginResponseDTO {
+public record LoginResponseDTO (
+        String accessToken
+){
 }
