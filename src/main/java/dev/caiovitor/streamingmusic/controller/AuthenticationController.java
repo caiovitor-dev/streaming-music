@@ -22,12 +22,11 @@ import java.net.URI;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final UserMapper userMapper;
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody UserCreateDTO userRegister){
 
-        User user = authenticationService.registerUser(userMapper.toEntity(userRegister));
+        User user = authenticationService.registerUser(userRegister);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
