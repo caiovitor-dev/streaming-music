@@ -1,12 +1,10 @@
 package dev.caiovitor.streamingmusic.controller;
 
 
-import dev.caiovitor.streamingmusic.dto.LoginRequestDTO;
-import dev.caiovitor.streamingmusic.dto.LoginResponseDTO;
-import dev.caiovitor.streamingmusic.dto.UserCreateDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.User;
-import dev.caiovitor.streamingmusic.mapper.UserMapper;
 import dev.caiovitor.streamingmusic.service.AuthenticationService;
+import dev.caiovitor.streamingmusic.service.RefreshTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +22,7 @@ import java.net.URI;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody UserCreateDTO userRegister){
@@ -46,5 +45,16 @@ public class AuthenticationController {
 
         LoginResponseDTO response = authenticationService.login(loginRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponseDTO> refreshToken(@Valid @RequestBody RefreshTokenRequestDTO tokenRequest){
+
+        RefreshTokenResult refreshTokenResult = refreshTokenService.rotateRefreshToken(tokenRequest.refreshToken());
+
+        return ResponseEntity.ok(new TokenResponseDTO(
+                refreshTokenResult.accessToken(),
+                refreshTokenResult.refreshToken()));
+
     }
 }

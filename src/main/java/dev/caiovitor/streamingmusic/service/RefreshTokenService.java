@@ -1,12 +1,17 @@
 package dev.caiovitor.streamingmusic.service;
 
+
+import dev.caiovitor.streamingmusic.dto.RefreshTokenResult;
 import dev.caiovitor.streamingmusic.entity.RefreshToken;
 import dev.caiovitor.streamingmusic.entity.User;
+import dev.caiovitor.streamingmusic.exception.TokenExpiredException;
+import dev.caiovitor.streamingmusic.exception.TokenNotFoundException;
+import dev.caiovitor.streamingmusic.exception.TokenRevokedException;
 import dev.caiovitor.streamingmusic.repository.RefreshTokenRepository;
+import dev.caiovitor.streamingmusic.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -20,6 +25,7 @@ import java.util.UUID;
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtService jwtService;
 
     @Value("${jwt.refresh-token-expiration}")
     private Duration refreshTokenExpiration;
@@ -29,13 +35,38 @@ public class RefreshTokenService {
         RefreshToken refreshToken = new RefreshToken();
         String token = UUID.randomUUID().toString();
 
-
         refreshToken.setExpiresAt(LocalDateTime.now().plus(refreshTokenExpiration));
         refreshToken.setUser(user);
         refreshToken.setTokenHash(hashToken(token));
 
         refreshTokenRepository.save(refreshToken);
         return token;
+    }
+
+    public RefreshTokenResult rotateRefreshToken(String token){
+
+        RefreshToken oldToken =  refreshTokenRepository.findByTokenHash(hashToken(token))
+               .orElseThrow(() -> new TokenNotFoundException("Token not found."));
+
+        if(oldToken.getExpiresAt().isBefore(LocalDateTime.now())){
+
+           oldToken.setRevokedAt(LocalDateTime.now());
+           refreshTokenRepository.save(oldToken);
+
+           throw new TokenExpiredException("Log again.");
+        }
+
+        if(oldToken.getRevokedAt() != null){
+           throw new TokenRevokedException("Token revoked");
+        }
+
+        oldToken.setRevokedAt(LocalDateTime.now());
+        refreshTokenRepository.save(oldToken);
+
+        String newAccess = jwtService.generateAccessToken(oldToken.getUser());
+        String refreshToken = createRefreshToken(oldToken.getUser());
+
+        return new RefreshTokenResult(newAccess, refreshToken);
     }
 
     private String hashToken(String token){
