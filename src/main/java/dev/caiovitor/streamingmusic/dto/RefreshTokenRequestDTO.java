@@ -1,4 +1,10 @@
 package dev.caiovitor.streamingmusic.dto;
 
-public record RefreshTokenRequestDTO() {
+import jakarta.validation.constraints.NotBlank;
+
+
+public record RefreshTokenRequestDTO(
+        @NotBlank(message = "Token cannot be empty")
+        String refreshToken
+) {
 }
