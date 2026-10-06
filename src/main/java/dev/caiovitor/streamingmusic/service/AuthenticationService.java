@@ -30,6 +30,7 @@ public class AuthenticationService {
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
 
     public User registerUser(UserCreateDTO userRegister){
@@ -58,9 +59,12 @@ public class AuthenticationService {
         );
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String token = jwtService.generateAccessToken(userDetails.getUser());
+        User user = userDetails.getUser();
 
-        return new LoginResponseDTO(token);
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return new LoginResponseDTO(accessToken,refreshToken);
 
     }
 
