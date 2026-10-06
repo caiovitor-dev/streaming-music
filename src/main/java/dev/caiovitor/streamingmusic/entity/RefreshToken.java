@@ -21,8 +21,8 @@ public class RefreshToken {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "token",updatable = false,nullable = false,unique = true)
-    private UUID token;
+    @Column(name = "token_hash",updatable = false,nullable = false,unique = true,length = 64)
+    private String tokenHash;
 
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
