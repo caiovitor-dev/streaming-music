@@ -2,5 +2,5 @@ package dev.caiovitor.streamingmusic.dto;
 
 
 
-public record TokenResponseDTO(String accessToken, String refreshToken) {
+public record RefreshTokenResult(String accessToken, String refreshToken) {
 }
