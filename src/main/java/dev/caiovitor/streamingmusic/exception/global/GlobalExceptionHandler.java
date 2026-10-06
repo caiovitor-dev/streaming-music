@@ -2,8 +2,7 @@ package dev.caiovitor.streamingmusic.exception.global;
 
 import dev.caiovitor.streamingmusic.dto.ErrorResponseDTO;
 import dev.caiovitor.streamingmusic.dto.ValidationErrorResponseDTO;
-import dev.caiovitor.streamingmusic.exception.EmailAlreadyExistsException;
-import dev.caiovitor.streamingmusic.exception.RoleNotFoundException;
+import dev.caiovitor.streamingmusic.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -64,6 +63,49 @@ public class GlobalExceptionHandler {
                         ,HttpStatus.NOT_FOUND.value(),
                         ex.getMessage(),
                         HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTokenNotFound(TokenNotFoundException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+@ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTokenExpired(TokenExpiredException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.UNAUTHORIZED.value(),
+                        ex.getMessage(),
+                        HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+    @ExceptionHandler(TokenRevokedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTokenRevoked(TokenRevokedException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.UNAUTHORIZED.value(),
+                        ex.getMessage(),
+                        HttpStatus.UNAUTHORIZED.getReasonPhrase(),
                         getPath(request)
                 )
         );
