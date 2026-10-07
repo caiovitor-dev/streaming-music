@@ -6,8 +6,10 @@ import dev.caiovitor.streamingmusic.entity.RefreshToken;
 import dev.caiovitor.streamingmusic.entity.User;
 import dev.caiovitor.streamingmusic.exception.TokenExpiredException;
 import dev.caiovitor.streamingmusic.exception.TokenNotFoundException;
+import dev.caiovitor.streamingmusic.exception.TokenOwnershipException;
 import dev.caiovitor.streamingmusic.exception.TokenRevokedException;
 import dev.caiovitor.streamingmusic.repository.RefreshTokenRepository;
+import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import dev.caiovitor.streamingmusic.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,7 +72,21 @@ public class RefreshTokenService {
         return new RefreshTokenResult(newAccess, refreshToken);
     }
 
+    public void logout(String token, CustomUserDetails userDetails){
 
+        RefreshToken refreshToken = findByTokenHash(token)
+                .orElseThrow(() -> new TokenNotFoundException("Token not found"));
+        
+        if(!refreshToken.getUser().equals(userDetails.getUser())){
+            throw new TokenOwnershipException("The refresh token does not belong to the authenticated user.");
+        }
+
+        if(!refreshToken.getExpiresAt().isBefore(LocalDateTime.now()) && refreshToken.getRevokedAt() == null){
+            refreshToken.setRevokedAt(LocalDateTime.now());
+            refreshTokenRepository.save(refreshToken);
+        }
+
+    }
 
     private Optional<RefreshToken> findByTokenHash(String token){
         return refreshTokenRepository.findByTokenHash(hashToken(token));

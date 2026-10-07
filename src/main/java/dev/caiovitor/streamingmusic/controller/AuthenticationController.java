@@ -3,11 +3,14 @@ package dev.caiovitor.streamingmusic.controller;
 
 import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.User;
+import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import dev.caiovitor.streamingmusic.service.AuthenticationService;
 import dev.caiovitor.streamingmusic.service.RefreshTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,5 +59,13 @@ public class AuthenticationController {
                 refreshTokenResult.accessToken(),
                 refreshTokenResult.refreshToken()));
 
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/logout")
+    public ResponseEntity <Void> logout(@Valid @RequestBody RefreshTokenRequestDTO tokenRequest, @AuthenticationPrincipal CustomUserDetails userDetails){
+
+        refreshTokenService.logout(tokenRequest.refreshToken(),userDetails);
+        return ResponseEntity.noContent().build();
     }
 }
