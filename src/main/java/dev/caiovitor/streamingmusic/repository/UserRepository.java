@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            LEFT JOIN FETCH u.roles
             WHERE u.email =:email
            """)
-    public Optional<User> findByEmailWithRoles(@Param("email")String email);
+    Optional<User> findByEmailWithRoles(@Param("email")String email);
 
 
     Optional<User> findByEmail(String email);
