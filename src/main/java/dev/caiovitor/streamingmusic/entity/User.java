@@ -45,5 +45,5 @@ public class User {
 
     @LastModifiedDate
     @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
 }
