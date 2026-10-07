@@ -2,7 +2,7 @@ package dev.caiovitor.streamingmusic.dto;
 
 import java.time.LocalDateTime;
 
-public record UserResponseDTO(
+public record UserProfileResponseDTO(
         String name,
         String email,
         LocalDateTime createdAt,
