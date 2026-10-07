@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,7 +46,7 @@ public class RefreshTokenService {
 
     public RefreshTokenResult rotateRefreshToken(String token){
 
-        RefreshToken oldToken =  refreshTokenRepository.findByTokenHash(hashToken(token))
+        RefreshToken oldToken = findByTokenHash(token)
                .orElseThrow(() -> new TokenNotFoundException("Token not found."));
 
         if(oldToken.getExpiresAt().isBefore(LocalDateTime.now())){
@@ -67,6 +68,12 @@ public class RefreshTokenService {
         String refreshToken = createRefreshToken(oldToken.getUser());
 
         return new RefreshTokenResult(newAccess, refreshToken);
+    }
+
+
+
+    private Optional<RefreshToken> findByTokenHash(String token){
+        return refreshTokenRepository.findByTokenHash(hashToken(token));
     }
 
     private String hashToken(String token){
