@@ -1,7 +1,7 @@
 package dev.caiovitor.streamingmusic.exception;
 
-public class EmailNotFoundException extends RuntimeException {
-    public EmailNotFoundException(String message) {
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(String message) {
         super(message);
     }
 }
