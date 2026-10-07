@@ -110,6 +110,19 @@ public class GlobalExceptionHandler {
                 )
         );
 
+    }  @ExceptionHandler(TokenOwnershipException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTokenRevoked(TokenOwnershipException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.UNAUTHORIZED.value(),
+                        ex.getMessage(),
+                        HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
     }
 
 
