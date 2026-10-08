@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class UserController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponseDTO> getUserProfile(@AuthenticationPrincipal CustomUserDetails userDetails){
 
@@ -26,11 +26,14 @@ public class UserController {
         return ResponseEntity.ok(userProfile);
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PatchMapping("/profile")
     public ResponseEntity<Void> updateUserProfile(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserProfileUpdateDTO userUpdate){
 
         userService.updateUserProfile(userDetails.getUsername(),userUpdate);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }
