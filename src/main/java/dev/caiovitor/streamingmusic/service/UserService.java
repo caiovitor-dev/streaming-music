@@ -1,6 +1,7 @@
 package dev.caiovitor.streamingmusic.service;
 
 import dev.caiovitor.streamingmusic.dto.UserProfileResponseDTO;
+import dev.caiovitor.streamingmusic.dto.UserProfileUpdateDTO;
 import dev.caiovitor.streamingmusic.entity.User;
 import dev.caiovitor.streamingmusic.exception.UserNotFoundException;
 import dev.caiovitor.streamingmusic.mapper.UserMapper;
@@ -29,5 +30,13 @@ public class UserService {
 
         return userMapper.toDTO(user);
 
+    }
+
+    public void updateUserProfile(String email, UserProfileUpdateDTO userUpdate){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        userMapper.updateProfile(userUpdate,user);
+        userRepository.save(user);
     }
 }

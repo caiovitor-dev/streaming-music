@@ -2,16 +2,14 @@ package dev.caiovitor.streamingmusic.controller;
 
 
 import dev.caiovitor.streamingmusic.dto.UserProfileResponseDTO;
+import dev.caiovitor.streamingmusic.dto.UserProfileUpdateDTO;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import dev.caiovitor.streamingmusic.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,6 +24,13 @@ public class UserController {
 
         UserProfileResponseDTO userProfile = userService.getUserProfile(userDetails.getUsername());
         return ResponseEntity.ok(userProfile);
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<Void> updateUserProfile(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserProfileUpdateDTO userUpdate){
+
+        userService.updateUserProfile(userDetails.getUsername(),userUpdate);
+        return ResponseEntity.noContent().build();
     }
 
 }
