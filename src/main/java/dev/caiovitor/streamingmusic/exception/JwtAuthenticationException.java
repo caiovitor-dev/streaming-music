@@ -1,9 +1,10 @@
 package dev.caiovitor.streamingmusic.exception;
 
 
+import org.springframework.security.core.AuthenticationException;
 
-public class AuthenticationException extends javax.naming.AuthenticationException {
-    public AuthenticationException(String message) {
-        super(message);
+public class JwtAuthenticationException extends AuthenticationException {
+    public JwtAuthenticationException(String message,Throwable cause) {
+        super(message,cause);
     }
 }
