@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.service;
 
+import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileUpdateDTO;
 import dev.caiovitor.streamingmusic.entity.User;
@@ -7,7 +8,12 @@ import dev.caiovitor.streamingmusic.exception.UserNotFoundException;
 import dev.caiovitor.streamingmusic.mapper.UserMapper;
 import dev.caiovitor.streamingmusic.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+
 
 @RequiredArgsConstructor
 @Service
@@ -38,5 +44,13 @@ public class UserService {
 
         userMapper.updateProfile(userUpdate,user);
         userRepository.save(user);
+    }
+
+    public PageResponseDTO<UserProfileResponseDTO> findAllUsers(int page,int size){
+
+        Pageable pageable  = PageRequest.of(page,size);
+        Page<UserProfileResponseDTO> content = userRepository.findAll(pageable).map(userMapper::toDTO);
+
+        return PageResponseDTO.from(content);
     }
 }
