@@ -1,2 +1,2 @@
 ALTER TABLE users
-ADD COLUMN image_url
+ADD COLUMN image_url TEXT;
