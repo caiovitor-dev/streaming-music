@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -15,5 +16,9 @@ public class RoleService {
 
     public Optional<Role> findByName(String name){
         return roleRepository.findByName(name);
+    }
+
+    public Set<Role> findAllByName(Set<String> name){
+        return roleRepository.findAllByName(name);
     }
 }
