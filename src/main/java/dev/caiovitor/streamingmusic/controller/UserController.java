@@ -4,6 +4,7 @@ package dev.caiovitor.streamingmusic.controller;
 import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileUpdateDTO;
+import dev.caiovitor.streamingmusic.dto.UserUpdateRoleDTO;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import dev.caiovitor.streamingmusic.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -48,6 +51,17 @@ public class UserController {
 
 
     }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("{id}/role")
+    public ResponseEntity<Void> updateRole(@PathVariable UUID id, @RequestBody UserUpdateRoleDTO roleUpdate){
+
+        userService.updateUserRole(id,roleUpdate.roles());
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 
 }
