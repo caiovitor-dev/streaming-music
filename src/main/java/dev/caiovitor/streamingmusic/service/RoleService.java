@@ -19,6 +19,6 @@ public class RoleService {
     }
 
     public Set<Role> findAllByName(Set<String> name){
-        return roleRepository.findAllByName(name);
+        return roleRepository.findAllByNameIn(name);
     }
 }
