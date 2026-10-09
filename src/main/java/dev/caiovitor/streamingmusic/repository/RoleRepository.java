@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface RoleRepository extends JpaRepository<Role, UUID> {
 
-   public Optional<Role> findByName(String name);
+    Optional<Role> findByName(String name);
 
 
     Set<Role> findAllByNameIn(Set<String> name);
