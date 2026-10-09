@@ -3,7 +3,6 @@ package dev.caiovitor.streamingmusic.service;
 import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileUpdateDTO;
-import dev.caiovitor.streamingmusic.dto.UserUpdateRoleDTO;
 import dev.caiovitor.streamingmusic.entity.Role;
 import dev.caiovitor.streamingmusic.entity.User;
 import dev.caiovitor.streamingmusic.exception.RoleNotFoundException;
@@ -16,11 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 
 @RequiredArgsConstructor
