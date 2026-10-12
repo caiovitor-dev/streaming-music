@@ -21,3 +21,11 @@ jwt:
  secret-key: ${JWT_SECRET_KEY}
  expiration: ${JWT_EXPIRATION}
  refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
+
+ app:
+   aws:
+     s3:
+      region: ${REGION}
+      bucket-name: ${BUCKET-NAME}
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
