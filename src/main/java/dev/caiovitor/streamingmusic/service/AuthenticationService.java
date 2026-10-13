@@ -16,7 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -31,9 +33,10 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final S3Service s3Service;
 
 
-    public User registerUser(UserCreateDTO userRegister){
+    public User registerUser(UserCreateDTO userRegister) {
 
         if(userService.existsByEmail(userRegister.email())){
             throw new EmailAlreadyExistsException("Email already exists.");
@@ -41,10 +44,12 @@ public class AuthenticationService {
 
         String encode = passwordEncoder.encode(userRegister.password());
         Role role = roleService.findByName("ROLE_USER").orElseThrow(() -> new RoleNotFoundException("Role Not Found")) ;
+        String imageUrl = s3Service.uploadFile(userRegister.imageProfile(), "images");
 
         User user = userMapper.toEntity(userRegister);
         user.setRoles(Set.of(role));
         user.setPassword(encode);
+        user.setImageUrl(imageUrl);
 
         return userService.creatUser(user);
     }
