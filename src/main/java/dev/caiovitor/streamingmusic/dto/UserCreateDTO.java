@@ -2,6 +2,7 @@ package dev.caiovitor.streamingmusic.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
 public record UserCreateDTO(
 
@@ -13,6 +14,8 @@ public record UserCreateDTO(
         String email,
 
         @NotBlank(message = "Password cannot be blank.")
-        String password
+        String password,
+
+        MultipartFile imageProfile
 ) {
 }
