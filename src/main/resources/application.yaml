@@ -17,6 +17,11 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 35MB
+
 jwt:
  secret-key: ${JWT_SECRET_KEY}
  expiration: ${JWT_EXPIRATION}
