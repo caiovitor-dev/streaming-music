@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -135,6 +137,36 @@ public class GlobalExceptionHandler {
                         ,HttpStatus.NOT_FOUND.value(),
                         ex.getMessage(),
                         HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
+    @ExceptionHandler(FileSizeExceededException.class)
+    public ResponseEntity<ErrorResponseDTO> handleFileSizeExceeded(FileSizeExceededException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUploadSizeExceeded(FileSizeExceededException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
                         getPath(request)
                 )
         );
