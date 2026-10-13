@@ -1,13 +1,18 @@
 package dev.caiovitor.streamingmusic.service;
 
 
+import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
 import dev.caiovitor.streamingmusic.dto.SongRequestDTO;
+import dev.caiovitor.streamingmusic.dto.SongResponseDTO;
 import dev.caiovitor.streamingmusic.entity.Song;
 import dev.caiovitor.streamingmusic.exception.FileSizeExceededException;
 import dev.caiovitor.streamingmusic.mapper.SongMapper;
 import dev.caiovitor.streamingmusic.repository.SongRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 
@@ -46,4 +51,10 @@ public class SongService {
     }
 
 
+    public PageResponseDTO<SongResponseDTO> findAllSongs(Pageable pageable) {
+
+        Page<SongResponseDTO> content = songRepository.findAll(pageable).map(songMapper::toDTO);
+        return PageResponseDTO.from(content);
+
+    }
 }
