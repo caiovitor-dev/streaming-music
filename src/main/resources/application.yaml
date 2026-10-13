@@ -22,9 +22,9 @@ jwt:
  expiration: ${JWT_EXPIRATION}
  refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
 
- app:
-   aws:
-     s3:
+app:
+  aws:
+    s3:
       region: ${REGION}
       bucket-name: ${BUCKET-NAME}
       access-key: ${AWS_ACCESS_KEY}
