@@ -1,4 +1,13 @@
 package dev.caiovitor.streamingmusic.dto;
 
-public class SongResponseDTO {
+import java.time.LocalDateTime;
+
+public record SongResponseDTO(
+        String title,
+        String artist,
+        String songUrl,
+        String imageUrl,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {
 }
