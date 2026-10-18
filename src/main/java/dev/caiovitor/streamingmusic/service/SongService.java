@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Service
 public class SongService {
@@ -55,6 +57,15 @@ public class SongService {
 
         Page<SongResponseDTO> content = songRepository.findAll(pageable).map(songMapper::toDTO);
         return PageResponseDTO.from(content);
+
+    }
+
+    public SongResponseDTO findById(UUID id){
+
+       Song song = songRepository.findById(id)
+               .orElseThrow(() -> new RuntimeException("Song not found."));
+
+        return songMapper.toDTO(song);
 
     }
 }

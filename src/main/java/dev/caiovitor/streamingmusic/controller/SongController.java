@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RequestMapping("/song")
@@ -52,5 +53,13 @@ public class SongController {
 
         PageResponseDTO<SongResponseDTO> allSongs = songService.findAllSongs(pageable);
         return ResponseEntity.ok(allSongs);
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<SongResponseDTO> findById(@PathVariable UUID id){
+
+        SongResponseDTO songResponse = songService.findById(id);
+        return ResponseEntity.ok(songResponse);
+
     }
 }
