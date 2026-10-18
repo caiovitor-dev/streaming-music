@@ -174,14 +174,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUploadSizeExceeded(FileSizeExceededException ex, WebRequest request){
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request){
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponseDTO(
                         LocalDateTime.now()
-                        ,HttpStatus.BAD_REQUEST.value(),
+                        ,HttpStatus.NOT_FOUND.value(),
                         ex.getMessage(),
-                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        HttpStatus.NOT_FOUND.getReasonPhrase(),
                         getPath(request)
                 )
         );
