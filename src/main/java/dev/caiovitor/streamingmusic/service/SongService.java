@@ -1,7 +1,9 @@
 package dev.caiovitor.streamingmusic.service;
 
 
+import dev.caiovitor.streamingmusic.Specification.SongSpecification;
 import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
+import dev.caiovitor.streamingmusic.dto.SongFilterDTO;
 import dev.caiovitor.streamingmusic.dto.SongRequestDTO;
 import dev.caiovitor.streamingmusic.dto.SongResponseDTO;
 import dev.caiovitor.streamingmusic.entity.Song;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 
@@ -66,6 +69,21 @@ public class SongService {
                .orElseThrow(() -> new RuntimeException("Song not found."));
 
         return songMapper.toDTO(song);
+
+    }
+
+    public PageResponseDTO<SongResponseDTO> searchSongs(SongFilterDTO songFilter,Pageable pageable){
+
+        Specification<Song> specification = Specification
+                .where(SongSpecification.artistContains(songFilter.artist()))
+                .and(SongSpecification.titleContains(songFilter.title()));
+
+
+        Page<SongResponseDTO> songResponse = songRepository
+                .findAll(specification,pageable)
+                .map(songMapper::toDTO);
+
+        return PageResponseDTO.from(songResponse);
 
     }
 }

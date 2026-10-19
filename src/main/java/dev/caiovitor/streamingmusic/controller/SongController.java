@@ -1,6 +1,7 @@
 package dev.caiovitor.streamingmusic.controller;
 
 import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
+import dev.caiovitor.streamingmusic.dto.SongFilterDTO;
 import dev.caiovitor.streamingmusic.dto.SongRequestDTO;
 import dev.caiovitor.streamingmusic.dto.SongResponseDTO;
 import dev.caiovitor.streamingmusic.entity.Song;
@@ -60,6 +61,16 @@ public class SongController {
 
         SongResponseDTO songResponse = songService.findById(id);
         return ResponseEntity.ok(songResponse);
+
+    }
+
+    @GetMapping("/search")
+    ResponseEntity<PageResponseDTO<SongResponseDTO>> searchSongs(
+            @Valid SongFilterDTO songFilter, @PageableDefault(size = 10, sort = "title",direction = Sort.Direction.ASC) Pageable pageable){
+
+        PageResponseDTO<SongResponseDTO> songResponse = songService.searchSongs(songFilter, pageable);
+        return ResponseEntity.ok(songResponse);
+
 
     }
 }
