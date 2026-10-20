@@ -49,7 +49,7 @@ public class SongController {
     }
 
     @GetMapping
-    ResponseEntity<PageResponseDTO<SongResponseDTO>> getAllSongs(
+    public ResponseEntity<PageResponseDTO<SongResponseDTO>> getAllSongs(
             @PageableDefault(page = 0,size = 10,sort = "title",direction = Sort.Direction.DESC) Pageable pageable){
 
         PageResponseDTO<SongResponseDTO> allSongs = songService.findAllSongs(pageable);
@@ -57,7 +57,7 @@ public class SongController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<SongResponseDTO> findById(@PathVariable UUID id){
+    public ResponseEntity<SongResponseDTO> findById(@PathVariable UUID id){
 
         SongResponseDTO songResponse = songService.findById(id);
         return ResponseEntity.ok(songResponse);
@@ -65,7 +65,7 @@ public class SongController {
     }
 
     @GetMapping("/search")
-    ResponseEntity<PageResponseDTO<SongResponseDTO>> searchSongs(
+    public ResponseEntity<PageResponseDTO<SongResponseDTO>> searchSongs(
             @Valid SongFilterDTO songFilter, @PageableDefault(size = 10, sort = "title",direction = Sort.Direction.ASC) Pageable pageable){
 
         PageResponseDTO<SongResponseDTO> songResponse = songService.searchSongs(songFilter, pageable);
