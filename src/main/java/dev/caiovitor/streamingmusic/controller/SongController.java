@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -84,4 +85,13 @@ public class SongController {
         songService.updateSong(songUpdate,id);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ARTIST')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSong(@PathVariable UUID id,@AuthenticationPrincipal CustomUserDetails userDetails) throws AccessDeniedException {
+
+        songService.deleteSong(id,userDetails);
+        return ResponseEntity.noContent().build();
+    }
+
 }

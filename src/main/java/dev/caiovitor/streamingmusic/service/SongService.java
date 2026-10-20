@@ -4,11 +4,10 @@ package dev.caiovitor.streamingmusic.service;
 import dev.caiovitor.streamingmusic.Specification.SongSpecification;
 import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Song;
-import dev.caiovitor.streamingmusic.exception.FileSizeExceededException;
-import dev.caiovitor.streamingmusic.exception.InvalidFileException;
-import dev.caiovitor.streamingmusic.exception.ResourceNotFoundException;
+import dev.caiovitor.streamingmusic.exception.*;
 import dev.caiovitor.streamingmusic.mapper.SongMapper;
 import dev.caiovitor.streamingmusic.repository.SongRepository;
+import dev.caiovitor.streamingmusic.security.CustomAccessDeniedHandler;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -152,6 +152,27 @@ public class SongService {
         if(audioSong.isEmpty()){
             throw new InvalidFileException("The file is empty");
         }
+
+    }
+
+    @Transactional
+    public void deleteSong(UUID id,CustomUserDetails userDetails) {
+
+        Song song = songRepository.findById(id)
+                .orElseThrow(() -> new SongNotFoundException("Song not found."));
+
+        if(song.getId() != userDetails.getUser().getId()){
+            throw new SongOwnershipException("You can't delete this song.");
+        }
+
+        String image = song.getImageUrl();
+        String audio = song.getSongUrl();
+
+        songRepository.delete(song);
+
+        s3Service.deleteFile(image);
+        s3Service.deleteFile(audio);
+
 
     }
 }
