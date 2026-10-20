@@ -187,6 +187,35 @@ public class GlobalExceptionHandler {
         );
 
     }
+    @ExceptionHandler(SongNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleSongNotFound(SongNotFoundException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidFile(InvalidFileException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
 
 
     private String getPath(WebRequest request){
