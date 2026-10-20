@@ -2,12 +2,11 @@ package dev.caiovitor.streamingmusic.service;
 
 
 import dev.caiovitor.streamingmusic.Specification.SongSpecification;
-import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
-import dev.caiovitor.streamingmusic.dto.SongFilterDTO;
-import dev.caiovitor.streamingmusic.dto.SongRequestDTO;
-import dev.caiovitor.streamingmusic.dto.SongResponseDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Song;
 import dev.caiovitor.streamingmusic.exception.FileSizeExceededException;
+import dev.caiovitor.streamingmusic.exception.InvalidFileException;
+import dev.caiovitor.streamingmusic.exception.ResourceNotFoundException;
 import dev.caiovitor.streamingmusic.mapper.SongMapper;
 import dev.caiovitor.streamingmusic.repository.SongRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
@@ -17,7 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -84,6 +85,73 @@ public class SongService {
                 .map(songMapper::toDTO);
 
         return PageResponseDTO.from(songResponse);
+
+    }
+
+    @Transactional
+    public void updateSong(SongUpdateDTO songUpdate,UUID id) {
+
+        Song song = songRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Song not found."));
+
+        validateAudio(songUpdate.audioSong());
+        validateImage(songUpdate.imageSong());
+
+        String oldImage = song.getImageUrl();
+        String oldAudio = song.getSongUrl();
+
+
+        if(songUpdate.imageSong() != null){
+        song.setImageUrl(s3Service.uploadFile(songUpdate.imageSong(), "images"));
+        }
+
+        if(songUpdate.audioSong() != null){
+        song.setSongUrl(s3Service.uploadFile(songUpdate.audioSong(), "audios"));
+        }
+
+        songMapper.updateSong(songUpdate,song);
+        songRepository.save(song);
+
+        if(songUpdate.imageSong() != null){
+            s3Service.deleteFile(oldImage);
+        }
+
+        if(songUpdate.audioSong() != null) {
+            s3Service.deleteFile(oldAudio);
+        }
+    }
+
+    private void validateImage(MultipartFile imageSong){
+
+        if(imageSong == null){
+            return;
+        }
+        long maxImageByte = DataSize.ofMegabytes(5).toBytes();
+
+        if (imageSong.getSize() > maxImageByte){
+            throw  new FileSizeExceededException("The image exceeded the 5 MB size limit.");
+        }
+
+        if(imageSong.isEmpty()){
+            throw  new InvalidFileException("The file is empty");
+        }
+    }
+
+    private void validateAudio(MultipartFile audioSong){
+
+        if(audioSong == null){
+            return;
+        }
+
+        long maxSongByte = DataSize.ofMegabytes(30).toBytes();
+
+        if (audioSong.getSize() > maxSongByte){
+            throw new FileSizeExceededException("The song exceeded the 30 MB size limit.");
+        }
+
+        if(audioSong.isEmpty()){
+            throw new InvalidFileException("The file is empty");
+        }
 
     }
 }

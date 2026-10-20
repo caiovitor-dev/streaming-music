@@ -1,9 +1,6 @@
 package dev.caiovitor.streamingmusic.controller;
 
-import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
-import dev.caiovitor.streamingmusic.dto.SongFilterDTO;
-import dev.caiovitor.streamingmusic.dto.SongRequestDTO;
-import dev.caiovitor.streamingmusic.dto.SongResponseDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Song;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import dev.caiovitor.streamingmusic.service.SongService;
@@ -72,5 +69,12 @@ public class SongController {
         return ResponseEntity.ok(songResponse);
 
 
+    }
+
+    @PatchMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateSong(@PathVariable UUID id, @Valid SongUpdateDTO songUpdate){
+
+        songService.updateSong(songUpdate,id);
+        return ResponseEntity.noContent().build();
     }
 }
