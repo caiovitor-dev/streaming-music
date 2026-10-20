@@ -25,12 +25,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/song")
 @RestController
-@PreAuthorize("hasRole('ARTIST')")
+
 public class SongController {
 
 
     private final SongService songService;
 
+
+    @PreAuthorize("hasRole('ARTIST')")
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> saveSong(@Valid @ModelAttribute SongRequestDTO songRequest, @AuthenticationPrincipal CustomUserDetails userDetails){
 
@@ -45,6 +47,7 @@ public class SongController {
         return ResponseEntity.created(location).build();
     }
 
+
     @GetMapping
     public ResponseEntity<PageResponseDTO<SongResponseDTO>> getAllSongs(
             @PageableDefault(page = 0,size = 10,sort = "title",direction = Sort.Direction.DESC) Pageable pageable){
@@ -53,6 +56,7 @@ public class SongController {
         return ResponseEntity.ok(allSongs);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<SongResponseDTO> findById(@PathVariable UUID id){
 
@@ -60,6 +64,8 @@ public class SongController {
         return ResponseEntity.ok(songResponse);
 
     }
+
+
 
     @GetMapping("/search")
     public ResponseEntity<PageResponseDTO<SongResponseDTO>> searchSongs(
@@ -71,6 +77,7 @@ public class SongController {
 
     }
 
+    @PreAuthorize("hasRole('ARTIST')")
     @PatchMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateSong(@PathVariable UUID id, @Valid SongUpdateDTO songUpdate){
 
