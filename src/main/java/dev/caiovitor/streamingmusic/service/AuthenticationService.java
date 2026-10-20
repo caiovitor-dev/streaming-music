@@ -38,13 +38,20 @@ public class AuthenticationService {
 
     public User registerUser(UserCreateDTO userRegister) {
 
+        String imageUrl = null;
+
         if(userService.existsByEmail(userRegister.email())){
             throw new EmailAlreadyExistsException("Email already exists.");
         }
 
+        Role role = roleService.findByName("ROLE_USER")
+                .orElseThrow(() -> new RoleNotFoundException("Role Not Found.")) ;
+
+        if(userRegister.imageProfile() !=null){
+           imageUrl = s3Service.uploadFile(userRegister.imageProfile(), "images");
+       }
+
         String encode = passwordEncoder.encode(userRegister.password());
-        Role role = roleService.findByName("ROLE_USER").orElseThrow(() -> new RoleNotFoundException("Role Not Found")) ;
-        String imageUrl = s3Service.uploadFile(userRegister.imageProfile(), "images");
 
         User user = userMapper.toEntity(userRegister);
         user.setRoles(Set.of(role));
