@@ -176,12 +176,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleResourceNotFound(ResourceNotFoundException ex, WebRequest request){
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+        return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE).body(
                 new ErrorResponseDTO(
                         LocalDateTime.now()
-                        ,HttpStatus.NOT_FOUND.value(),
+                        ,HttpStatus.CONTENT_TOO_LARGE.value(),
                         ex.getMessage(),
-                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        HttpStatus.CONTENT_TOO_LARGE.getReasonPhrase(),
                         getPath(request)
                 )
         );
@@ -205,12 +205,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidFileException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidFile(InvalidFileException ex, WebRequest request){
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ErrorResponseDTO(
                         LocalDateTime.now()
-                        ,HttpStatus.NOT_FOUND.value(),
+                        ,HttpStatus.BAD_REQUEST.value(),
                         ex.getMessage(),
-                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
                         getPath(request)
                 )
         );
