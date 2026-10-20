@@ -216,6 +216,20 @@ public class GlobalExceptionHandler {
         );
 
     }
+    @ExceptionHandler(SongOwnershipException.class)
+    public ResponseEntity<ErrorResponseDTO> handleSongOwnership(SongOwnershipException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.FORBIDDEN.value(),
+                        ex.getMessage(),
+                        HttpStatus.FORBIDDEN.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
 
 
     private String getPath(WebRequest request){
