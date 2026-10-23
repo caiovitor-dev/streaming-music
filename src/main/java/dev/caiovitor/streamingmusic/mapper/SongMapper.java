@@ -10,6 +10,9 @@ import org.mapstruct.*;
 public interface SongMapper {
 
 
+
+    @Mapping(target = "imageUrl" ,ignore = true)
+    @Mapping(target = "songUrl" ,ignore = true)
     public Song toEntity(SongRequestDTO songRequest);
 
     public SongResponseDTO toDTO(Song song);
