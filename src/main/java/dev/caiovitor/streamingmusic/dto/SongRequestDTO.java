@@ -18,6 +18,9 @@ public record SongRequestDTO(
         @NotNull(message = "Image song cannot be blank.")
         MultipartFile imageSong,
 
+        @NotBlank(message = "Title cannot be blank.")
+        String lyrics,
+
         @NotNull(message = "Audio song cannot be blank.")
         MultipartFile audioSong
 
