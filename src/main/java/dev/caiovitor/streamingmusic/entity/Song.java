@@ -34,6 +34,9 @@ public class Song {
     @Column(name = "image_url",nullable = false,columnDefinition = "TEXT")
     private String imageUrl;
 
+    @Column(name = "lyrics",nullable = false,columnDefinition = "TEXT")
+    private String lyrics;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
