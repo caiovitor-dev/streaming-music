@@ -10,10 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.IOException;
+import java.net.URL;
+import java.time.Duration;
 import java.util.UUID;
 
 
@@ -23,9 +28,11 @@ public class S3Service {
 
 
     private final S3Client S3client;
+    private final S3Presigner s3Presigner;
 
     @Value("${app.aws.s3.bucket-name}")
     private String bucketName;
+
 
 
     public String uploadFile(MultipartFile file, String folder)  {
@@ -58,5 +65,17 @@ public class S3Service {
 
         S3client.deleteObject(objectRequest);
 
+    }
+
+
+    public URL presignedUrl(String key){
+
+        GetObjectPresignRequest build = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(15))
+                .getObjectRequest(b -> b.bucket(bucketName).key(key))
+                .build();
+
+
+        return s3Presigner.presignGetObject(build).url();
     }
 }
