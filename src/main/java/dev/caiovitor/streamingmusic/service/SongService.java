@@ -31,10 +31,10 @@ public class SongService {
     private final SongMapper songMapper;
     private final S3Service s3Service;
 
-    public Song saveSong (SongRequestDTO songRequest, CustomUserDetails userDetails){
+    public Song saveSong (SongRequestDTO songRequest, CustomUserDetails userDetails) {
 
         long maxImageByte = DataSize.ofMegabytes(5).toBytes();
-        long maxSongByte = DataSize.ofMegabytes(10).toBytes();
+        long maxSongByte = DataSize.ofMegabytes(30).toBytes();
 
         if(songRequest.imageSong().getSize() > maxImageByte ){
            throw  new FileSizeExceededException("The image exceeded the 5 MB size limit.");
@@ -44,8 +44,8 @@ public class SongService {
            throw  new FileSizeExceededException("The song exceeded the 30 MB size limit.");
         }
 
-        Song song = songMapper.toEntity(songRequest);
 
+        Song song = songMapper.toEntity(songRequest);
         String image = s3Service.uploadFile(songRequest.imageSong(), "images");
         String audio = s3Service.uploadFile(songRequest.audioSong(), "audios");
 
