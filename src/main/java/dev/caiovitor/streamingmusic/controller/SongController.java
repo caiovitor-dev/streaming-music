@@ -88,7 +88,7 @@ public class SongController {
 
     @PreAuthorize("hasRole('ARTIST')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSong(@PathVariable UUID id,@AuthenticationPrincipal CustomUserDetails userDetails) throws AccessDeniedException {
+    public ResponseEntity<Void> deleteSong(@PathVariable UUID id,@AuthenticationPrincipal CustomUserDetails userDetails)  {
 
         songService.deleteSong(id,userDetails);
         return ResponseEntity.noContent().build();
