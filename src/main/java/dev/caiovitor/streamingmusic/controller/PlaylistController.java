@@ -27,9 +27,9 @@ public class PlaylistController {
 
     @PreAuthorize("hasAnyRole('USER','ARTIST')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> savePlaylist(@Valid CreatePlaylistDTO createPlaylist, @AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<Void> createPlaylist(@Valid CreatePlaylistDTO createPlaylist, @AuthenticationPrincipal CustomUserDetails userDetails){
 
-        Playlist playlist = playlistService.savePlaylist(createPlaylist, userDetails);
+        Playlist playlist = playlistService.createPlaylist(createPlaylist, userDetails);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

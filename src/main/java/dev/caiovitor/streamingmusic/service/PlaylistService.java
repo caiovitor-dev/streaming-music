@@ -22,7 +22,7 @@ public class PlaylistService {
     private final S3Service s3Service;
     
 
-    public Playlist savePlaylist(CreatePlaylistDTO createPlaylist, CustomUserDetails userDetails)  {
+    public Playlist createPlaylist(CreatePlaylistDTO createPlaylist, CustomUserDetails userDetails)  {
 
         if(createPlaylist.imagePlaylist() != null){
             validateImage(createPlaylist.imagePlaylist());
