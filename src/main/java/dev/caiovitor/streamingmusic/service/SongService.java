@@ -92,22 +92,20 @@ public class SongService {
     public void updateSong(SongUpdateDTO songUpdate,UUID id) {
 
         Song song = songRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Song not found."));
+                .orElseThrow(() -> new SongNotFoundException("Song not found."));
 
-        validateAudio(songUpdate.audioSong());
-        validateImage(songUpdate.imageSong());
+        if(songUpdate.imageSong() != null){
+            validateImage(songUpdate.imageSong());
+            song.setImageUrl(s3Service.uploadFile(songUpdate.imageSong(), "images"));
+        }
+
+        if(songUpdate.audioSong() != null ){
+            validateAudio(songUpdate.audioSong());
+            song.setSongUrl(s3Service.uploadFile(songUpdate.audioSong(), "audios"));
+        }
 
         String oldImage = song.getImageUrl();
         String oldAudio = song.getSongUrl();
-
-
-        if(songUpdate.imageSong() != null){
-        song.setImageUrl(s3Service.uploadFile(songUpdate.imageSong(), "images"));
-        }
-
-        if(songUpdate.audioSong() != null){
-        song.setSongUrl(s3Service.uploadFile(songUpdate.audioSong(), "audios"));
-        }
 
         songMapper.updateSong(songUpdate,song);
         songRepository.save(song);
@@ -123,35 +121,36 @@ public class SongService {
 
     private void validateImage(MultipartFile imageSong){
 
-        if(imageSong == null){
-            return;
-        }
         long maxImageByte = DataSize.ofMegabytes(5).toBytes();
+
+        if(!"image/jpeg".equals(imageSong.getContentType()) && !"image/png".equals(imageSong.getContentType())){
+            throw new InvalidFileException("Only JPEG and PNG images are allowed.");
+        }
+
+        if(imageSong.isEmpty()){
+            throw  new FileEmptyException("The file is empty");
+        }
 
         if (imageSong.getSize() > maxImageByte){
             throw  new FileSizeExceededException("The image exceeded the 5 MB size limit.");
         }
 
-        if(imageSong.isEmpty()){
-            throw  new InvalidFileException("The file is empty");
-        }
     }
 
     private void validateAudio(MultipartFile audioSong){
 
-        if(audioSong == null){
-            return;
-        }
-
         long maxSongByte = DataSize.ofMegabytes(30).toBytes();
 
+        if("audio/flac".equals(audioSong.getContentType()) && ! "audio/mp3".equals(audioSong.getContentType())){
+            throw new InvalidFileException("Only MP3 and FLAC audios are allowed.");
+        }
+        if(audioSong.isEmpty()){
+            throw new FileEmptyException("The file is empty");
+        }
         if (audioSong.getSize() > maxSongByte){
             throw new FileSizeExceededException("The song exceeded the 30 MB size limit.");
         }
 
-        if(audioSong.isEmpty()){
-            throw new InvalidFileException("The file is empty");
-        }
 
     }
 
