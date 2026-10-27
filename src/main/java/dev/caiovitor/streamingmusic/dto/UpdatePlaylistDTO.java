@@ -1,4 +1,12 @@
 package dev.caiovitor.streamingmusic.dto;
 
-public class UpdatePlaylistDTO {
+import org.springframework.web.multipart.MultipartFile;
+
+public record UpdatePlaylistDTO(
+
+        String name,
+        String description,
+        Boolean isPublic,
+        MultipartFile imagePlaylist
+) {
 }
