@@ -31,7 +31,7 @@ public class SongService {
     private final SongMapper songMapper;
     private final S3Service s3Service;
 
-    public Song saveSong (SongRequestDTO songRequest, CustomUserDetails userDetails) {
+    public Song createSong (SongRequestDTO songRequest, CustomUserDetails userDetails) {
 
         long maxImageByte = DataSize.ofMegabytes(5).toBytes();
         long maxSongByte = DataSize.ofMegabytes(30).toBytes();

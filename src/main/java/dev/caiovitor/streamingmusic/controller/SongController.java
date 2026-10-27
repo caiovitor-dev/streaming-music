@@ -35,9 +35,9 @@ public class SongController {
 
     @PreAuthorize("hasRole('ARTIST')")
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> saveSong(@Valid @ModelAttribute SongRequestDTO songRequest, @AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<Void> createSong(@Valid @ModelAttribute SongRequestDTO songRequest, @AuthenticationPrincipal CustomUserDetails userDetails){
 
-        Song song = songService.saveSong(songRequest,userDetails);
+        Song song = songService.createSong(songRequest,userDetails);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
