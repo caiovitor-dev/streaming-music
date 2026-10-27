@@ -7,11 +7,9 @@ import dev.caiovitor.streamingmusic.entity.Song;
 import dev.caiovitor.streamingmusic.exception.*;
 import dev.caiovitor.streamingmusic.mapper.SongMapper;
 import dev.caiovitor.streamingmusic.repository.SongRepository;
-import dev.caiovitor.streamingmusic.security.CustomAccessDeniedHandler;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.AccessDeniedException;
+
 import java.util.UUID;
 
 @RequiredArgsConstructor
