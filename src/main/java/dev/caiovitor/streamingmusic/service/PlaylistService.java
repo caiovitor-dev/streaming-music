@@ -1,16 +1,19 @@
 package dev.caiovitor.streamingmusic.service;
 
 import dev.caiovitor.streamingmusic.dto.CreatePlaylistDTO;
+import dev.caiovitor.streamingmusic.dto.UpdatePlaylistDTO;
 import dev.caiovitor.streamingmusic.entity.Playlist;
-import dev.caiovitor.streamingmusic.exception.FileSizeExceededException;
-import dev.caiovitor.streamingmusic.exception.InvalidFileException;
+import dev.caiovitor.streamingmusic.exception.*;
 import dev.caiovitor.streamingmusic.mapper.PlaylistMapper;
 import dev.caiovitor.streamingmusic.repository.PlaylistRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 
 @Service
@@ -40,10 +43,37 @@ public class PlaylistService {
         return playlist;
     }
 
+    @Transactional
+    public void updatePlaylist(UpdatePlaylistDTO updatePlaylist,UUID id,CustomUserDetails userDetails){
+
+        Playlist playlist =playlistRepository.findById(id)
+                .orElseThrow(() -> new PlaylistNotFoundException("Playlist not found."));
+
+        if(!playlist.getUser().getId() .equals(userDetails.getUser().getId())){
+            throw new PlaylistOwnershipException("You do not have permission to modify this playlist.");
+        }
+
+        if(updatePlaylist.imagePlaylist() != null){
+            validateImage(updatePlaylist.imagePlaylist());
+            playlist.setImageUrl(s3Service.uploadFile(updatePlaylist.imagePlaylist(), "images"));
+        }
+
+        String oldImage = playlist.getImageUrl();
+
+        playlistMapper.updatePlaylist(updatePlaylist,playlist);
+
+        if(updatePlaylist.imagePlaylist() != null && oldImage != null){
+            s3Service.deleteFile(oldImage);
+        }
+    }
+
     private void validateImage(MultipartFile imagePlaylist){
 
         long maxImageByte = DataSize.ofMegabytes(5).toBytes();
 
+        if(imagePlaylist.isEmpty()){
+            throw new FileEmptyException("The file is empty.");
+        }
         if(imagePlaylist.getSize() > maxImageByte ){
             throw  new FileSizeExceededException("The image exceeded the 5 MB size limit.");
         }
