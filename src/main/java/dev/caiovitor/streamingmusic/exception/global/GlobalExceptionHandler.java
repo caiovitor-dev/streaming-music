@@ -231,6 +231,51 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(PlaylistNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handlePlaylistNotFound(PlaylistNotFoundException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
+    @ExceptionHandler(PlaylistOwnershipException.class)
+    public ResponseEntity<ErrorResponseDTO> handlePlaylistOwnership(PlaylistOwnershipException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.UNAUTHORIZED.value(),
+                        ex.getMessage(),
+                        HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
+    @ExceptionHandler(FileEmptyException.class)
+    public ResponseEntity<ErrorResponseDTO> handleFileEmpty(FileEmptyException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
 
     private String getPath(WebRequest request){
         return request.getDescription(false).replace("uri=","");
