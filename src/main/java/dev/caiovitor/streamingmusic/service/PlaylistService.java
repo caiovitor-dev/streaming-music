@@ -1,6 +1,8 @@
 package dev.caiovitor.streamingmusic.service;
 
 import dev.caiovitor.streamingmusic.dto.CreatePlaylistDTO;
+import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
+import dev.caiovitor.streamingmusic.dto.PlaylistResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UpdatePlaylistDTO;
 import dev.caiovitor.streamingmusic.entity.Playlist;
 import dev.caiovitor.streamingmusic.exception.*;
@@ -8,11 +10,14 @@ import dev.caiovitor.streamingmusic.mapper.PlaylistMapper;
 import dev.caiovitor.streamingmusic.repository.PlaylistRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.util.UUID;
 
 
@@ -23,7 +28,7 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistMapper playlistMapper;
     private final S3Service s3Service;
-    
+
 
     public Playlist createPlaylist(CreatePlaylistDTO createPlaylist, CustomUserDetails userDetails)  {
 
@@ -82,4 +87,21 @@ public class PlaylistService {
         }
 
     }
+
+    public PageResponseDTO<PlaylistResponseDTO> findByOwner(CustomUserDetails userDetails, Pageable pageable) {
+
+        Page<PlaylistResponseDTO> playlistResponse = playlistRepository.findAllByUserId(userDetails.getUser().getId(), pageable)
+                .map(playlist -> {
+
+                    PlaylistResponseDTO dto = playlistMapper.toDTO(playlist);
+                    return dto.withImageUrl(resolveImageUrl(playlist.getImageUrl()));
+                });
+
+        return PageResponseDTO.from(playlistResponse);
+    }
+
+    private String resolveImageUrl(String key) {
+        return key == null ? null : s3Service.presignedUrl(key).toString();
+    }
+
 }
