@@ -10,7 +10,9 @@ import dev.caiovitor.streamingmusic.repository.SongRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,12 +73,13 @@ public class SongService {
 
     }
 
-    public PageResponseDTO<SongResponseDTO> searchSongs(SongFilterDTO songFilter,Pageable pageable){
+    public PageResponseDTO<SongResponseDTO> searchSongs(SongFilterDTO songFilter, PageRequestDTO pageRequest){
 
         Specification<Song> specification = Specification
                 .where(SongSpecification.artistContains(songFilter.artist()))
                 .and(SongSpecification.titleContains(songFilter.title()));
 
+        Pageable pageable =PageRequest.of(pageRequest.page(),pageRequest.size(), Sort.by("title").ascending());
 
         Page<SongResponseDTO> songResponse = songRepository
                 .findAll(specification,pageable)

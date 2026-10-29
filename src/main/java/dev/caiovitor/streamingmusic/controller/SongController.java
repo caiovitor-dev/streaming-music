@@ -67,9 +67,9 @@ public class SongController {
 
     @GetMapping("/search")
     public ResponseEntity<PageResponseDTO<SongResponseDTO>> searchSongs(
-            @Valid SongFilterDTO songFilter, @PageableDefault(size = 10, sort = "title",direction = Sort.Direction.ASC) Pageable pageable){
+            @Valid SongFilterDTO songFilter, @Valid PageRequestDTO pageRequest){
 
-        PageResponseDTO<SongResponseDTO> songResponse = songService.searchSongs(songFilter, pageable);
+        PageResponseDTO<SongResponseDTO> songResponse = songService.searchSongs(songFilter, pageRequest);
         return ResponseEntity.ok(songResponse);
 
 

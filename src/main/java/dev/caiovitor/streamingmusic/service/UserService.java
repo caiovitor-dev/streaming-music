@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.service;
 
+import dev.caiovitor.streamingmusic.dto.PageRequestDTO;
 import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileResponseDTO;
 import dev.caiovitor.streamingmusic.dto.UserProfileUpdateDTO;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
@@ -52,12 +54,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public PageResponseDTO<UserProfileResponseDTO> findAllUsers(int page,int size){
+    public PageResponseDTO<UserProfileResponseDTO> findAllUsers(PageRequestDTO pageRequest){
 
-        Pageable pageable  = PageRequest.of(page,size);
-        Page<UserProfileResponseDTO> content = userRepository.findAll(pageable).map(userMapper::toDTO);
+        Pageable pageable  = PageRequest.of(pageRequest.page(),pageRequest.size(), Sort.by("name").ascending());
+        Page<UserProfileResponseDTO> userResponse = userRepository
+                .findAll(pageable)
+                .map(userMapper::toDTO);
 
-        return PageResponseDTO.from(content);
+        return PageResponseDTO.from(userResponse);
     }
 
     @Transactional
