@@ -1,9 +1,6 @@
 package dev.caiovitor.streamingmusic.service;
 
-import dev.caiovitor.streamingmusic.dto.CreatePlaylistDTO;
-import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
-import dev.caiovitor.streamingmusic.dto.PlaylistResponseDTO;
-import dev.caiovitor.streamingmusic.dto.UpdatePlaylistDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Playlist;
 import dev.caiovitor.streamingmusic.exception.*;
 import dev.caiovitor.streamingmusic.mapper.PlaylistMapper;
@@ -11,7 +8,9 @@ import dev.caiovitor.streamingmusic.repository.PlaylistRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
@@ -87,7 +86,9 @@ public class PlaylistService {
 
     }
 
-    public PageResponseDTO<PlaylistResponseDTO> findByOwner(CustomUserDetails userDetails, Pageable pageable) {
+    public PageResponseDTO<PlaylistResponseDTO> findByOwner(CustomUserDetails userDetails, PageRequestDTO pageRequest) {
+
+        Pageable pageable = PageRequest.of(pageRequest.page(), pageRequest.size(), Sort.by("name").ascending());
 
         Page<PlaylistResponseDTO> playlistResponse = playlistRepository.findAllByUserId(userDetails.getUser().getId(), pageable)
                 .map(playlist -> {

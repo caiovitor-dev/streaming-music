@@ -1,21 +1,18 @@
 package dev.caiovitor.streamingmusic.controller;
 
-import dev.caiovitor.streamingmusic.dto.CreatePlaylistDTO;
-import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
-import dev.caiovitor.streamingmusic.dto.PlaylistResponseDTO;
-import dev.caiovitor.streamingmusic.dto.UpdatePlaylistDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Playlist;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import dev.caiovitor.streamingmusic.service.PlaylistService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -62,10 +59,10 @@ public class PlaylistController {
     @GetMapping("/me")
     public ResponseEntity<PageResponseDTO<PlaylistResponseDTO>> findMyPlaylist(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PageableDefault(size = 10,sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+            @Valid PageRequestDTO pageRequest
     ){
 
-        PageResponseDTO<PlaylistResponseDTO> playlistResponse = playlistService.findByOwner(userDetails, pageable);
+        PageResponseDTO<PlaylistResponseDTO> playlistResponse = playlistService.findByOwner(userDetails,pageRequest);
         return ResponseEntity.ok(playlistResponse);
     }
 }
