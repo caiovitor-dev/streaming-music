@@ -39,13 +39,12 @@ public class PlaylistService {
         Playlist playlist = playlistMapper.toEntity(createPlaylist);
 
         playlist.setUser(userDetails.getUser());
-        playlistRepository.save(playlist);
 
         if(createPlaylist.imagePlaylist() != null){
             playlist.setImageUrl(s3Service.uploadFile(createPlaylist.imagePlaylist(), "images"));
         }
 
-        return playlist;
+        return playlistRepository.save(playlist);
     }
 
     @Transactional
