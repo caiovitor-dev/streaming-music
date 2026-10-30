@@ -9,4 +9,13 @@ public record UserProfileResponseDTO(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+    public UserProfileResponseDTO withImageUrl(String imageUrl){
+        return new UserProfileResponseDTO(
+                name,
+                email,
+                imageUrl,
+                createdAt,
+                updatedAt
+        );
+    }
 }
