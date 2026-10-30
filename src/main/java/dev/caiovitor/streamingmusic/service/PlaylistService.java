@@ -100,6 +100,25 @@ public class PlaylistService {
         return PageResponseDTO.from(playlistResponse);
     }
 
+    @Transactional
+    public void deletePlaylist(UUID id,CustomUserDetails userDetails) {
+
+       Playlist playlist =  playlistRepository.findById(id)
+               .orElseThrow(() -> new PlaylistNotFoundException("Playlist not found"));
+
+       if(!playlist.getUser().getId().equals(userDetails.getUser().getId())){
+           throw new PlaylistOwnershipException("You do not have permission to delete this playlist.");
+       }
+
+       String image = playlist.getImageUrl();
+       playlistRepository.delete(playlist);
+
+       if(image !=null){
+           s3Service.deleteFile(image);
+       }
+
+    }
+
     private String resolveImageUrl(String key) {
         return key == null ? null : s3Service.presignedUrl(key).toString();
     }

@@ -65,4 +65,14 @@ public class PlaylistController {
         PageResponseDTO<PlaylistResponseDTO> playlistResponse = playlistService.findByOwner(userDetails,pageRequest);
         return ResponseEntity.ok(playlistResponse);
     }
+
+    @PreAuthorize("hasAnyRole('USER','ARTIST')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePlaylist(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal CustomUserDetails userDetails){
+
+        playlistService.deletePlaylist(id,userDetails);
+        return ResponseEntity.noContent().build();
+    }
 }
