@@ -29,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleService roleService;
+    private final S3Service s3Service;
 
     public User creatUser(User user ){
         return userRepository.save(user);
@@ -57,9 +58,14 @@ public class UserService {
     public PageResponseDTO<UserProfileResponseDTO> findAllUsers(PageRequestDTO pageRequest){
 
         Pageable pageable  = PageRequest.of(pageRequest.page(),pageRequest.size(), Sort.by("name").ascending());
+
         Page<UserProfileResponseDTO> userResponse = userRepository
                 .findAll(pageable)
-                .map(userMapper::toDTO);
+                .map(user -> {
+
+                    UserProfileResponseDTO dto = userMapper.toDTO(user);
+                    return dto.withImageUrl(resolveImageUrl(dto.imageUrl()));
+                });
 
         return PageResponseDTO.from(userResponse);
     }
@@ -79,5 +85,9 @@ public class UserService {
         user.setRoles(roles);
         userRepository.save(user);
 
+    }
+
+    private String resolveImageUrl(String imageKey){
+        return imageKey == null ? null : s3Service.presignedUrl(imageKey).toString();
     }
 }
