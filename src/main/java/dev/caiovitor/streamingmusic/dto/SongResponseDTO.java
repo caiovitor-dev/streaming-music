@@ -10,4 +10,15 @@ public record SongResponseDTO(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+
+    public SongResponseDTO withImageAndAudioUrl(String songUrl,String imageUrl){
+        return new SongResponseDTO(
+                title,
+                artist,
+                songUrl,
+                imageUrl,
+                createdAt,
+                updatedAt
+        );
+    }
 }
