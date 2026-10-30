@@ -45,7 +45,7 @@ public class PlaylistController {
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updatePlaylist(@PathVariable UUID id,
-                                               UpdatePlaylistDTO updatePlaylist,
+                                               @Valid UpdatePlaylistDTO updatePlaylist,
                                                @AuthenticationPrincipal CustomUserDetails userDetails
     ){
 

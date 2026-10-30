@@ -30,7 +30,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PatchMapping("/profile")
-    public ResponseEntity<Void> updateUserProfile(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserProfileUpdateDTO userUpdate){
+    public ResponseEntity<Void> updateUserProfile(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody @Valid UserProfileUpdateDTO userUpdate){
 
         userService.updateUserProfile(userDetails.getUsername(),userUpdate);
         return ResponseEntity.noContent().build();
