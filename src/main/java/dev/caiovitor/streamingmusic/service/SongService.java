@@ -83,7 +83,12 @@ public class SongService {
 
         Page<SongResponseDTO> songResponse = songRepository
                 .findAll(specification,pageable)
-                .map(songMapper::toDTO);
+                .map(song -> {
+
+                    SongResponseDTO dto = songMapper.toDTO(song);
+                    return dto.withImageAndAudioUrl(resolveFileUrl(dto.songUrl()),resolveFileUrl(dto.imageUrl()));
+
+                });
 
         return PageResponseDTO.from(songResponse);
 
@@ -174,5 +179,9 @@ public class SongService {
         s3Service.deleteFile(audio);
 
 
+    }
+
+    private String resolveFileUrl(String fileKey){
+        return fileKey == null ? null : s3Service.presignedUrl(fileKey).toString();
     }
 }
