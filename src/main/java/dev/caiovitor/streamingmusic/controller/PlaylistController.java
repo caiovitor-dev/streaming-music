@@ -22,12 +22,12 @@ import java.util.UUID;
 @RequestMapping("/playlist")
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('USER','ARTIST')")
 public class PlaylistController {
 
 
     private final PlaylistService playlistService;
 
-    @PreAuthorize("hasAnyRole('USER','ARTIST')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> createPlaylist(@Valid CreatePlaylistDTO createPlaylist, @AuthenticationPrincipal CustomUserDetails userDetails){
 
@@ -43,7 +43,6 @@ public class PlaylistController {
 
     }
 
-    @PreAuthorize("hasAnyRole('USER','ARTIST')")
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updatePlaylist(@PathVariable UUID id,
                                                UpdatePlaylistDTO updatePlaylist,
@@ -55,7 +54,6 @@ public class PlaylistController {
 
     }
 
-    @PreAuthorize("hasAnyRole('USER','ARTIST')")
     @GetMapping("/me")
     public ResponseEntity<PageResponseDTO<PlaylistResponseDTO>> findMyPlaylist(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -66,7 +64,7 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistResponse);
     }
 
-    @PreAuthorize("hasAnyRole('USER','ARTIST')")
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlaylist(
             @PathVariable UUID id,
