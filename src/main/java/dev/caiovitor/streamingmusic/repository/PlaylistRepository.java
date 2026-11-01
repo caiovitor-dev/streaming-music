@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface PlaylistRepository extends JpaRepository<Playlist, UUID> {
 
     Page<Playlist> findAllByUserId(UUID id, Pageable pageable);
+
+    Page<Playlist> findAllByNameContainingIgnoreCaseAndIsPublicTrue(String name,Pageable pageable);
 }
