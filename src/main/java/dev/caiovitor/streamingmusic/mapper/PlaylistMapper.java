@@ -11,11 +11,13 @@ public interface PlaylistMapper {
 
 
     @Mapping(target = "imageUrl",ignore = true)
+    @Mapping(target = "public",source = "isPublic")
     Playlist toEntity(CreatePlaylistDTO createPlayList);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "imageUrl",ignore = true)
     void updatePlaylist(UpdatePlaylistDTO updatePlaylist,@MappingTarget Playlist playlist);
 
+    @Mapping(target = "isPublic",source = "public")
     PlaylistResponseDTO toDTO(Playlist playlist);
 }
