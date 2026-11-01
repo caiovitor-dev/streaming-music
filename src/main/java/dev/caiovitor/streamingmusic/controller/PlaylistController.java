@@ -73,4 +73,15 @@ public class PlaylistController {
         playlistService.deletePlaylist(id,userDetails);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping
+    public ResponseEntity<PageResponseDTO<PlaylistResponseDTO>> searchPublicPlaylists(
+            @RequestParam(required = false,defaultValue = "") String name,
+            @Valid PageRequestDTO pageRequest){
+
+        PageResponseDTO<PlaylistResponseDTO> allPlaylistsPublic = playlistService.searchPublicPlaylists(name, pageRequest);
+        return ResponseEntity.ok(allPlaylistsPublic);
+
+
+    }
 }

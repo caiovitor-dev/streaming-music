@@ -118,6 +118,20 @@ public class PlaylistService {
        }
 
     }
+    public PageResponseDTO<PlaylistResponseDTO> searchPublicPlaylists(String name, PageRequestDTO pageRequest) {
+
+        Pageable pageable = PageRequest.of(pageRequest.page(),pageRequest.size(),Sort.by("name"));
+
+        Page<PlaylistResponseDTO> playlistResponse = playlistRepository.findAllByNameContainingIgnoreCaseAndIsPublicTrue(name.trim(), pageable)
+                .map(playlist -> {
+
+                    PlaylistResponseDTO dto = playlistMapper.toDTO(playlist);
+                    return dto.withImageUrl(resolveImageUrl(playlist.getImageUrl()));
+                });
+
+        return PageResponseDTO.from(playlistResponse);
+
+    }
 
     private String resolveImageUrl(String key) {
         return key == null ? null : s3Service.presignedUrl(key).toString();
