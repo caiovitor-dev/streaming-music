@@ -36,7 +36,7 @@ public class PlaylistSong {
 
     @LastModifiedDate
     @Column(name = "updated_at",nullable = false)
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
 
     @Column(name = "position",nullable = false)
     private Integer position;
