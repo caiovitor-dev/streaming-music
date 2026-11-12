@@ -29,6 +29,10 @@ public class PlaylistService {
     private final S3Service s3Service;
 
 
+    public Playlist findById(UUID id){
+        return playlistRepository.findById(id)
+                .orElseThrow(() -> new PlaylistNotFoundException("Playlist not found"));
+    }
     public Playlist createPlaylist(CreatePlaylistDTO createPlaylist, CustomUserDetails userDetails)  {
 
         if(createPlaylist.imagePlaylist() != null){
