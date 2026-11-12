@@ -1,7 +1,7 @@
 package dev.caiovitor.streamingmusic.exception;
 
-public class SongAlreadyExists extends RuntimeException {
-    public SongAlreadyExists(String message) {
+public class SongAlreadyInPlaylistException extends RuntimeException {
+    public SongAlreadyInPlaylistException(String message) {
         super(message);
     }
 }

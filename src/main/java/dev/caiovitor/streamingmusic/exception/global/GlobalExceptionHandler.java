@@ -275,6 +275,20 @@ public class GlobalExceptionHandler {
         );
 
     }
+    @ExceptionHandler(SongAlreadyInPlaylistException.class)
+    public ResponseEntity<ErrorResponseDTO> handleSongAlreadyExists(SongAlreadyInPlaylistException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.CONFLICT.value(),
+                        ex.getMessage(),
+                        HttpStatus.CONFLICT.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
 
 
     private String getPath(WebRequest request){
