@@ -58,7 +58,7 @@ public class SongController {
     @GetMapping("/{id}")
     public ResponseEntity<SongResponseDTO> findById(@PathVariable UUID id){
 
-        SongResponseDTO songResponse = songService.findById(id);
+        SongResponseDTO songResponse = songService.songResponse(id);
         return ResponseEntity.ok(songResponse);
 
     }
