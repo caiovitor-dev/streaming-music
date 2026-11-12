@@ -64,13 +64,15 @@ public class SongService {
 
     }
 
-    public SongResponseDTO findById(UUID id){
-
-       Song song = songRepository.findById(id)
-               .orElseThrow(() -> new RuntimeException("Song not found."));
-
+    public SongResponseDTO songResponse(UUID id){
+        Song song = findById(id);
         return songMapper.toDTO(song);
 
+    }
+
+    public Song findById(UUID id){
+        return songRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Song not found."));
     }
 
     public PageResponseDTO<SongResponseDTO> searchSongs(SongFilterDTO songFilter, PageRequestDTO pageRequest){
