@@ -38,4 +38,15 @@ public class PlaylistSongController {
 
         return ResponseEntity.created(location).build();
     }
+
+    @DeleteMapping("/{songId}")
+    public ResponseEntity<Void> deletePlaylistSong(
+            @PathVariable UUID playlistId,
+            @PathVariable UUID songId,
+            @AuthenticationPrincipal CustomUserDetails userDetails){
+
+        playlistSongService.deletePlaylistSong(playlistId,songId,userDetails);
+        return ResponseEntity.noContent().build();
+
+    }
 }

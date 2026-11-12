@@ -6,6 +6,7 @@ import dev.caiovitor.streamingmusic.entity.PlaylistSong;
 import dev.caiovitor.streamingmusic.entity.Song;
 import dev.caiovitor.streamingmusic.exception.PlaylistOwnershipException;
 import dev.caiovitor.streamingmusic.exception.SongAlreadyInPlaylistException;
+import dev.caiovitor.streamingmusic.exception.SongNotFoundException;
 import dev.caiovitor.streamingmusic.mapper.PlaylistSongMapper;
 import dev.caiovitor.streamingmusic.repository.PlaylistSongRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
@@ -60,4 +61,24 @@ public class PlaylistSongService {
         return playlistSongRepository.save(playlistSong);
     }
 
+    @Transactional
+    public void deletePlaylistSong(UUID playlistId, UUID songId, CustomUserDetails userDetails) {
+
+        Playlist playlist = playlistService.findById(playlistId);
+
+        if(!playlist.getUser().getId().equals(userDetails.getUser().getId())){
+            throw new PlaylistOwnershipException("You do not have permission to modify this playlist.");
+        }
+
+        PlaylistSong playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId,songId)
+                .orElseThrow(() -> new SongNotFoundException("The song is not in the playlist."));
+
+
+        int position = playlistSong.getPosition();;
+
+        playlistSongRepository.delete(playlistSong);
+        playlistSongRepository.flush();
+        playlistSongRepository.shiftPositionsDown(playlistId,position);
+
+    }
 }
