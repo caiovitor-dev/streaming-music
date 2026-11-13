@@ -1,6 +1,8 @@
 package dev.caiovitor.streamingmusic.repository;
 
 import dev.caiovitor.streamingmusic.entity.PlaylistSong;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -36,10 +38,10 @@ public interface PlaylistSongRepository extends JpaRepository<PlaylistSong, UUID
 
     void shiftPositionsDown(@Param("id") UUID playlistId, @Param("position") int position);
 
-
-
     long countByPlaylistId(UUID id);
 
     Optional<PlaylistSong> findByPlaylistIdAndSongId(UUID playlistId, UUID songId);
+
+    Page<PlaylistSong> findAllByPlaylistId(UUID playlistId, Pageable pageable);
 
 }
