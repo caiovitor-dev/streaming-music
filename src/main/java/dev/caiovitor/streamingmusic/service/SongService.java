@@ -66,8 +66,9 @@ public class SongService {
 
     public SongResponseDTO songResponse(UUID id){
         Song song = findById(id);
-        return songMapper.toDTO(song);
+        SongResponseDTO dto = songMapper.toDTO(song);
 
+        return dto.withImageAndAudioUrl(resolveFileUrl(dto.songUrl()),resolveFileUrl(dto.imageUrl()));
     }
 
     public Song findById(UUID id){
