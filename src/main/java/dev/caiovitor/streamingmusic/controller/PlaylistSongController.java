@@ -1,5 +1,8 @@
 package dev.caiovitor.streamingmusic.controller;
 import dev.caiovitor.streamingmusic.dto.CreatePlaylistSongDTO;
+import dev.caiovitor.streamingmusic.dto.PageRequestDTO;
+import dev.caiovitor.streamingmusic.dto.PageResponseDTO;
+import dev.caiovitor.streamingmusic.dto.PlaylistSongResponseDTO;
 import dev.caiovitor.streamingmusic.entity.PlaylistSong;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
 import dev.caiovitor.streamingmusic.service.PlaylistSongService;
@@ -37,6 +40,23 @@ public class PlaylistSongController {
                 .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponseDTO<PlaylistSongResponseDTO>> getPlaylistSongs(
+            @PathVariable UUID playlistId,
+            @Valid PageRequestDTO pageRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+
+        PageResponseDTO<PlaylistSongResponseDTO> playlistSongResponseDTO =
+                playlistSongService.findAllSongsPlaylist(
+                        playlistId,
+                        pageRequest,
+                        customUserDetails
+                );
+
+        return ResponseEntity.ok(playlistSongResponseDTO);
     }
 
     @DeleteMapping("/{songId}")

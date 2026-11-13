@@ -1,16 +1,23 @@
 package dev.caiovitor.streamingmusic.service;
 
-import dev.caiovitor.streamingmusic.dto.CreatePlaylistSongDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Playlist;
 import dev.caiovitor.streamingmusic.entity.PlaylistSong;
 import dev.caiovitor.streamingmusic.entity.Song;
+import dev.caiovitor.streamingmusic.exception.PlaylistNotFoundException;
 import dev.caiovitor.streamingmusic.exception.PlaylistOwnershipException;
 import dev.caiovitor.streamingmusic.exception.SongAlreadyInPlaylistException;
 import dev.caiovitor.streamingmusic.exception.SongNotFoundException;
 import dev.caiovitor.streamingmusic.mapper.PlaylistSongMapper;
+import dev.caiovitor.streamingmusic.mapper.SongMapper;
 import dev.caiovitor.streamingmusic.repository.PlaylistSongRepository;
 import dev.caiovitor.streamingmusic.security.CustomUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,5 +87,24 @@ public class PlaylistSongService {
         playlistSongRepository.flush();
         playlistSongRepository.shiftPositionsDown(playlistId,position);
 
+    }
+
+    public PageResponseDTO<PlaylistSongResponseDTO> findAllSongsPlaylist(UUID playlistId,  PageRequestDTO pageRequest,CustomUserDetails userDetails) {
+
+        Playlist playlist =playlistService.findById(playlistId);
+
+        if(!playlist.isPublic() && !playlist.getUser().getId().equals(userDetails.getUser().getId())){
+            throw new PlaylistNotFoundException("Playlist not found.");
+        }
+
+        Pageable pageable = PageRequest.of(pageRequest.page(), pageRequest.size(), Sort.by("position").ascending());
+
+        Page<PlaylistSongResponseDTO> allByPlaylistId = playlistSongRepository.findAllByPlaylistId(playlistId,pageable)
+                .map(playlistSong -> new PlaylistSongResponseDTO(
+                           playlistSong.getPosition(),
+                           playlistSong.getCreatedAt(),songService.songResponse(playlistSong.getSong().getId()))
+                );
+
+        return PageResponseDTO.from(allByPlaylistId);
     }
 }
