@@ -59,6 +59,19 @@ public class PlaylistSongController {
         return ResponseEntity.ok(playlistSongResponseDTO);
     }
 
+    @PatchMapping("/{songId}")
+    public ResponseEntity<Void> changePosition(
+            @PathVariable UUID playlistId,
+            @PathVariable UUID songId,
+            @RequestParam(name = "position") int position,
+            @AuthenticationPrincipal CustomUserDetails userDetails){
+
+        playlistSongService.changePosition(playlistId,userDetails.getUser().getId(),songId,position);
+        return ResponseEntity.noContent().build();
+
+    }
+
+
     @DeleteMapping("/{songId}")
     public ResponseEntity<Void> deletePlaylistSong(
             @PathVariable UUID playlistId,

@@ -33,29 +33,29 @@ public class PlaylistSongService {
     private final PlaylistSongRepository playlistSongRepository;
 
     @Transactional
-    public PlaylistSong createPlaylistSong(UUID playlistId,CreatePlaylistSongDTO createPlaylist, CustomUserDetails userDetails){
+    public PlaylistSong createPlaylistSong(UUID playlistId, CreatePlaylistSongDTO createPlaylist, CustomUserDetails userDetails) {
 
-        
+
         Playlist playlist = playlistService.findById(playlistId);
         Song song = songService.findById(createPlaylist.songId());
 
-        if(!playlist.getUser().getId().equals(userDetails.getUser().getId())){
+        if (!playlist.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new PlaylistOwnershipException("You do not have permission to modify this playlist.");
         }
-        if(playlistSongRepository.existsByPlaylistIdAndSongId(playlist.getId(),song.getId())){
+        if (playlistSongRepository.existsByPlaylistIdAndSongId(playlist.getId(), song.getId())) {
             throw new SongAlreadyInPlaylistException("This song has already been added to this playlist");
         }
 
         int nextPosition = (int) playlistSongRepository.countByPlaylistId(playlist.getId()) + 1;
 
 
-        int position = (createPlaylist.position() == null || createPlaylist.position()>nextPosition)
+        int position = (createPlaylist.position() == null || createPlaylist.position() > nextPosition)
                 ? nextPosition
                 : createPlaylist.position();
 
 
-        if(position < nextPosition){
-            playlistSongRepository.changePosition(playlistId,position);
+        if (position < nextPosition) {
+            playlistSongRepository.changePosition(playlistId, position);
         }
 
         PlaylistSong playlistSong = playlistSongMapper.toEntity(createPlaylist);
@@ -73,38 +73,71 @@ public class PlaylistSongService {
 
         Playlist playlist = playlistService.findById(playlistId);
 
-        if(!playlist.getUser().getId().equals(userDetails.getUser().getId())){
+        if (!playlist.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new PlaylistOwnershipException("You do not have permission to modify this playlist.");
         }
 
-        PlaylistSong playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId,songId)
+        PlaylistSong playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId, songId)
                 .orElseThrow(() -> new SongNotFoundException("The song is not in the playlist."));
 
 
-        int position = playlistSong.getPosition();;
+        int position = playlistSong.getPosition();
+        ;
 
         playlistSongRepository.delete(playlistSong);
         playlistSongRepository.flush();
-        playlistSongRepository.shiftPositionsDown(playlistId,position);
+        playlistSongRepository.shiftPositionsDown(playlistId, position);
 
     }
 
-    public PageResponseDTO<PlaylistSongResponseDTO> findAllSongsPlaylist(UUID playlistId,  PageRequestDTO pageRequest,CustomUserDetails userDetails) {
+    public PageResponseDTO<PlaylistSongResponseDTO> findAllSongsPlaylist(UUID playlistId, PageRequestDTO pageRequest, CustomUserDetails userDetails) {
 
-        Playlist playlist =playlistService.findById(playlistId);
+        Playlist playlist = playlistService.findById(playlistId);
 
-        if(!playlist.isPublic() && !playlist.getUser().getId().equals(userDetails.getUser().getId())){
+        if (!playlist.isPublic() && !playlist.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new PlaylistNotFoundException("Playlist not found.");
         }
 
         Pageable pageable = PageRequest.of(pageRequest.page(), pageRequest.size(), Sort.by("position").ascending());
 
-        Page<PlaylistSongResponseDTO> allByPlaylistId = playlistSongRepository.findAllByPlaylistId(playlistId,pageable)
+        Page<PlaylistSongResponseDTO> allByPlaylistId = playlistSongRepository.findAllByPlaylistId(playlistId, pageable)
                 .map(playlistSong -> new PlaylistSongResponseDTO(
-                           playlistSong.getPosition(),
-                           playlistSong.getCreatedAt(),songService.songResponse(playlistSong.getSong().getId()))
+                        playlistSong.getPosition(),
+                        playlistSong.getCreatedAt(), songService.songResponse(playlistSong.getSong().getId()))
                 );
 
         return PageResponseDTO.from(allByPlaylistId);
+    }
+
+    @Transactional
+    public void changePosition(UUID playlistId, UUID userId, UUID songId, int newPosition) {
+
+        Playlist playlist = playlistService.findById(playlistId);
+
+        if (!playlist.getUser().getId().equals(userId)) {
+            throw new PlaylistOwnershipException("You do not have permission to modify this playlist.");
+        }
+
+        PlaylistSong playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId, songId)
+                .orElseThrow(() -> new SongNotFoundException("The song is not in the playlist."));
+
+        int total = (int) playlistSongRepository.countByPlaylistId(playlistId)+1;
+        int oldPosition = playlistSong.getPosition();
+
+        int target = Math.min(newPosition,total);
+
+        if(newPosition == total){
+            return;
+        }
+
+        if(target < oldPosition){
+            playlistSongRepository.shiftRange(playlistId,target,oldPosition-1,+1);
+        }
+        else{
+            playlistSongRepository.shiftRange(playlistId,oldPosition+1,target,-1);
+        }
+
+        playlistSong.setPosition(target);
+
     }
 }
