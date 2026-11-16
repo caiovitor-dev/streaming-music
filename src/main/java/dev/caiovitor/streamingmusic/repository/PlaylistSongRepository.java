@@ -38,6 +38,19 @@ public interface PlaylistSongRepository extends JpaRepository<PlaylistSong, UUID
 
     void shiftPositionsDown(@Param("id") UUID playlistId, @Param("position") int position);
 
+    @Modifying
+    @Query("""
+            UPDATE PlaylistSong u
+            SET u.position = u.position + :shiftPosition
+            WHERE u.playlist.id = :id
+            AND u.position BETWEEN :from AND :to
+            """)
+
+    void shiftRange(@Param("id") UUID playlistId,
+                    @Param("from") int from,
+                    @Param("to") int to,
+                    @Param("shiftPosition") int shiftPosition);
+
     long countByPlaylistId(UUID id);
 
     Optional<PlaylistSong> findByPlaylistIdAndSongId(UUID playlistId, UUID songId);
