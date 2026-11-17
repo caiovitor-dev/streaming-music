@@ -45,4 +45,12 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{categoryId}/playlists/{playlistId}")
+    public ResponseEntity<Void> removePlaylist(@PathVariable UUID categoryId, @PathVariable UUID playlistId){
+
+        categoryService.removePlaylist(categoryId,playlistId);
+        return ResponseEntity.noContent().build();
+
+    }
 }

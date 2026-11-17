@@ -70,4 +70,13 @@ public class CategoryService {
 
         category.getPlaylists().add(playlist);
     }
+
+    @Transactional
+    public void removePlaylist(UUID categoryId, UUID playlistId) {
+
+        Category category =categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        category.getPlaylists().removeIf(playlist -> playlist.getId().equals(playlistId));
+    }
 }
