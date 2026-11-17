@@ -22,7 +22,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "name",unique = true, nullable = false)
+    @Column(name = "name",unique = true, nullable = false,length = 100)
     private String name;
 
     @Column(name = "image_key",nullable = false,columnDefinition = "TEXT")
@@ -37,7 +37,7 @@ public class Category {
     private Set<Playlist> playlists = new HashSet<>();
 
 
-    @Column(name = "active")
+    @Column(name = "active",nullable = false)
     private boolean active = true;
 
     @Column(name = "position", nullable = false)
