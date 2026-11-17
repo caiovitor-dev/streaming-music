@@ -7,12 +7,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RequestMapping("/categories")
 @RequiredArgsConstructor
@@ -35,6 +35,14 @@ public class CategoryController {
 
         return ResponseEntity.created(location).build();
 
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{categoryId}/playlists/{playlistId}")
+    public ResponseEntity<Void> addPlaylist(@PathVariable UUID categoryId, @PathVariable UUID playlistId){
+
+        categoryService.addPlaylist(categoryId,playlistId);
+        return ResponseEntity.noContent().build();
     }
 
 }

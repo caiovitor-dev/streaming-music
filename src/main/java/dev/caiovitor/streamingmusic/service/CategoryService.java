@@ -2,10 +2,8 @@ package dev.caiovitor.streamingmusic.service;
 
 import dev.caiovitor.streamingmusic.dto.CreateCategoryDTO;
 import dev.caiovitor.streamingmusic.entity.Category;
-import dev.caiovitor.streamingmusic.exception.CategoryAlreadyExistsException;
-import dev.caiovitor.streamingmusic.exception.FileEmptyException;
-import dev.caiovitor.streamingmusic.exception.FileSizeExceededException;
-import dev.caiovitor.streamingmusic.exception.InvalidFileException;
+import dev.caiovitor.streamingmusic.entity.Playlist;
+import dev.caiovitor.streamingmusic.exception.*;
 import dev.caiovitor.streamingmusic.mapper.CategoryMapper;
 import dev.caiovitor.streamingmusic.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final PlaylistService playlistService;
     private final S3Service s3Service;
 
     @Transactional
@@ -54,5 +55,19 @@ public class CategoryService {
             throw new InvalidFileException("Only JPEG and PNG images are allowed.");
         }
 
+    }
+
+    @Transactional
+    public void addPlaylist(UUID categoryId, UUID playlistId) {
+        Category category =categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        Playlist playlist =playlistService.findById(playlistId);
+
+        if(!playlist.isPublic()){
+            throw new PlaylistNotPublicException("Playlist not public");
+        }
+
+        category.getPlaylists().add(playlist);
     }
 }
