@@ -290,6 +290,7 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(SongNotInPlaylistException.class)
     public ResponseEntity<ErrorResponseDTO> handleSongNotInPlaylist(SongNotInPlaylistException ex, WebRequest request){
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -298,6 +299,20 @@ public class GlobalExceptionHandler {
                         ,HttpStatus.NOT_FOUND.value(),
                         ex.getMessage(),
                         HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+    @ExceptionHandler(CategoryAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCategoryAlreadyExists(CategoryAlreadyExistsException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.CONFLICT.value(),
+                        ex.getMessage(),
+                        HttpStatus.CONFLICT.getReasonPhrase(),
                         getPath(request)
                 )
         );
