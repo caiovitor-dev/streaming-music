@@ -1,4 +1,14 @@
 package dev.caiovitor.streamingmusic.mapper;
 
-public class CategoryMapper {
+import dev.caiovitor.streamingmusic.dto.CreateCategoryDTO;
+import dev.caiovitor.streamingmusic.entity.Category;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper(componentModel = "spring")
+public interface CategoryMapper {
+
+    @Mapping(target = "imageKey",ignore = true)
+    Category toEntity(CreateCategoryDTO createCategory);
+
 }
