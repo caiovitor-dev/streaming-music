@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.service;
 
+import dev.caiovitor.streamingmusic.dto.CategoryResponseDTO;
 import dev.caiovitor.streamingmusic.dto.CreateCategoryDTO;
 import dev.caiovitor.streamingmusic.entity.Category;
 import dev.caiovitor.streamingmusic.entity.Playlist;
@@ -12,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -78,5 +81,16 @@ public class CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
         category.getPlaylists().removeIf(playlist -> playlist.getId().equals(playlistId));
+    }
+
+    public List<CategoryResponseDTO> getAllCategories() {
+
+      List<CategoryResponseDTO> categoryResponse= categoryRepository.findAllByActiveTrueOrderByPositionAscNameAsc().stream()
+                .map(category -> {
+                    CategoryResponseDTO dto = categoryMapper.toDTO(category);
+                    return dto.withImageUrl(s3Service.presignedUrl(category.getImageKey()).toString());
+                }).toList();
+
+      return categoryResponse;
     }
 }

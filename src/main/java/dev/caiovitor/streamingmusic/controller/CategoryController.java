@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.controller;
 
+import dev.caiovitor.streamingmusic.dto.CategoryResponseDTO;
 import dev.caiovitor.streamingmusic.dto.CreateCategoryDTO;
 import dev.caiovitor.streamingmusic.entity.Category;
 import dev.caiovitor.streamingmusic.service.CategoryService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/categories")
@@ -51,6 +53,14 @@ public class CategoryController {
 
         categoryService.removePlaylist(categoryId,playlistId);
         return ResponseEntity.noContent().build();
+
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(){
+
+        List<CategoryResponseDTO> allCategories = categoryService.getAllCategories();
+        return ResponseEntity.ok(allCategories);
 
     }
 }
