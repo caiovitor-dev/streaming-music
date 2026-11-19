@@ -93,4 +93,16 @@ public class CategoryService {
 
       return categoryResponse;
     }
+
+    public CategoryResponseDTO findById(UUID categoryId) {
+
+        Category category = categoryRepository.findByIdAndActiveTrue(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+
+        CategoryResponseDTO categoryResponse = categoryMapper.toDTO(category);
+        return categoryResponse.withImageUrl(s3Service.presignedUrl(category.getImageKey()).toString());
+
+    }
+
 }

@@ -63,4 +63,12 @@ public class CategoryController {
         return ResponseEntity.ok(allCategories);
 
     }
+
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponseDTO> findById(@PathVariable UUID categoryId){
+
+        CategoryResponseDTO categoryResponse = categoryService.findById(categoryId);
+        return ResponseEntity.ok(categoryResponse);
+
+    }
 }
