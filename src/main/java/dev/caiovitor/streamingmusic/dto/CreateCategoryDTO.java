@@ -17,7 +17,7 @@ public record CreateCategoryDTO(
 ) {
 
     public CreateCategoryDTO{
-        if(active()==null)
+        if(active==null)
             active = true;
     }
 }
