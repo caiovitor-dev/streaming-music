@@ -1,13 +1,18 @@
 package dev.caiovitor.streamingmusic.service;
 
-import dev.caiovitor.streamingmusic.dto.CategoryResponseDTO;
-import dev.caiovitor.streamingmusic.dto.CreateCategoryDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Category;
 import dev.caiovitor.streamingmusic.entity.Playlist;
 import dev.caiovitor.streamingmusic.exception.*;
 import dev.caiovitor.streamingmusic.mapper.CategoryMapper;
+import dev.caiovitor.streamingmusic.mapper.PlaylistMapper;
 import dev.caiovitor.streamingmusic.repository.CategoryRepository;
+import dev.caiovitor.streamingmusic.repository.PlaylistRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
@@ -24,6 +29,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final PlaylistService playlistService;
+    private final PlaylistRepository playlistRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -97,7 +103,7 @@ public class CategoryService {
        return categoryRepository.findByIdAndActiveTrue(categoryId)
                 .map(this::toResponse)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
-       
+
     }
 
     private CategoryResponseDTO toResponse(Category category){
@@ -105,4 +111,17 @@ public class CategoryService {
                 .withImageUrl(s3Service.presignedUrl(category.getImageKey()).toString());
     }
 
+    public PageResponseDTO<PlaylistResponseDTO> getCategoryPlaylist(UUID categoryId, PageRequestDTO pageRequest) {
+
+        Category category =categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        Pageable pageable = PageRequest.of(pageRequest.page(), pageRequest.size(),
+                Sort.by("name").and(Sort.by("id")));
+
+        Page<PlaylistResponseDTO> playlistResponseDTO = playlistRepository.findPublicByCategoryId(categoryId,pageable)
+                .map(playlistService::toResponse);
+
+        return PageResponseDTO.from(playlistResponseDTO);
+    }
 }

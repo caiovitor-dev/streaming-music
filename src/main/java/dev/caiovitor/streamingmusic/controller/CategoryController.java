@@ -1,11 +1,11 @@
 package dev.caiovitor.streamingmusic.controller;
 
-import dev.caiovitor.streamingmusic.dto.CategoryResponseDTO;
-import dev.caiovitor.streamingmusic.dto.CreateCategoryDTO;
+import dev.caiovitor.streamingmusic.dto.*;
 import dev.caiovitor.streamingmusic.entity.Category;
 import dev.caiovitor.streamingmusic.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,5 +70,17 @@ public class CategoryController {
         CategoryResponseDTO categoryResponse = categoryService.findById(categoryId);
         return ResponseEntity.ok(categoryResponse);
 
+    }
+
+    @GetMapping("/{categoryId}/playlists")
+    public ResponseEntity<PageResponseDTO<PlaylistResponseDTO>> getCategoryPlaylist(
+            @PathVariable UUID categoryId,
+            @Valid PageRequestDTO pageRequest
+    ){
+
+        PageResponseDTO<PlaylistResponseDTO> playlistResponse =
+                categoryService.getCategoryPlaylist(categoryId,pageRequest);
+
+        return ResponseEntity.ok(playlistResponse);
     }
 }
