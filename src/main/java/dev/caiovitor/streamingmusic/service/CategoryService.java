@@ -86,23 +86,23 @@ public class CategoryService {
     public List<CategoryResponseDTO> getAllCategories() {
 
       List<CategoryResponseDTO> categoryResponse= categoryRepository.findAllByActiveTrueOrderByPositionAscNameAsc().stream()
-                .map(category -> {
-                    CategoryResponseDTO dto = categoryMapper.toDTO(category);
-                    return dto.withImageUrl(s3Service.presignedUrl(category.getImageKey()).toString());
-                }).toList();
+              .map(this::toResponse)
+              .toList();
 
       return categoryResponse;
     }
 
     public CategoryResponseDTO findById(UUID categoryId) {
 
-        Category category = categoryRepository.findByIdAndActiveTrue(categoryId)
+       return categoryRepository.findByIdAndActiveTrue(categoryId)
+                .map(this::toResponse)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+       
+    }
 
-
-        CategoryResponseDTO categoryResponse = categoryMapper.toDTO(category);
-        return categoryResponse.withImageUrl(s3Service.presignedUrl(category.getImageKey()).toString());
-
+    private CategoryResponseDTO toResponse(Category category){
+        return categoryMapper.toDTO(category)
+                .withImageUrl(s3Service.presignedUrl(category.getImageKey()).toString());
     }
 
 }
