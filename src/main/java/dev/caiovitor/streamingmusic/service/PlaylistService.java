@@ -95,11 +95,7 @@ public class PlaylistService {
         Pageable pageable = PageRequest.of(pageRequest.page(), pageRequest.size(), Sort.by("name").ascending());
 
         Page<PlaylistResponseDTO> playlistResponse = playlistRepository.findAllByUserId(userDetails.getUser().getId(), pageable)
-                .map(playlist -> {
-
-                    PlaylistResponseDTO dto = playlistMapper.toDTO(playlist);
-                    return dto.withImageUrl(resolveImageUrl(playlist.getImageUrl()));
-                });
+                .map(this::toResponse);
 
         return PageResponseDTO.from(playlistResponse);
     }
@@ -127,18 +123,17 @@ public class PlaylistService {
         Pageable pageable = PageRequest.of(pageRequest.page(),pageRequest.size(),Sort.by("name"));
 
         Page<PlaylistResponseDTO> playlistResponse = playlistRepository.findAllByNameContainingIgnoreCaseAndIsPublicTrue(name.trim(), pageable)
-                .map(playlist -> {
-
-                    PlaylistResponseDTO dto = playlistMapper.toDTO(playlist);
-                    return dto.withImageUrl(resolveImageUrl(playlist.getImageUrl()));
-                });
+                .map(this::toResponse);
 
         return PageResponseDTO.from(playlistResponse);
 
     }
 
-    private String resolveImageUrl(String key) {
-        return key == null ? null : s3Service.presignedUrl(key).toString();
+    public  PlaylistResponseDTO toResponse(Playlist playlist){
+        return playlistMapper.toDTO(playlist)
+                .withImageUrl(playlist.getImageUrl() == null ? null : s3Service.presignedUrl(playlist.getImageUrl()).toString());
     }
+
+
 
 }
