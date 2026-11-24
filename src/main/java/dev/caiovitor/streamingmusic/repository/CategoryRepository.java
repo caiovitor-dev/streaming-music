@@ -2,7 +2,9 @@ package dev.caiovitor.streamingmusic.repository;
 
 import dev.caiovitor.streamingmusic.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +25,15 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     Optional<Category> findByIdAndActiveTrue(UUID categoryId);
 
+
+    @Modifying
+    @Query("""
+            UPDATE Category u
+            SET u.position = u.position + :shiftPosition
+            WHERE u.position BETWEEN :from  AND  :to
+            """)
+
+    void shiftPosition(@Param("shiftPosition") int shiftPosition,
+                       @Param("from") int from ,
+                       @Param("to") int to);
 }
