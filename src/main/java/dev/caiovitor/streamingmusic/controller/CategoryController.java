@@ -83,4 +83,11 @@ public class CategoryController {
 
         return ResponseEntity.ok(playlistResponse);
     }
+
+    @PatchMapping(value = "/{categoryId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity <Void> updateCategory(@PathVariable UUID categoryId,@Valid UpdateCategoryDTO updateCategory){
+
+        categoryService.updatePlaylist(categoryId,updateCategory);
+        return ResponseEntity.noContent().build();
+    }
 }

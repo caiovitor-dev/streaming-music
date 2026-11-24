@@ -8,6 +8,7 @@ import dev.caiovitor.streamingmusic.mapper.CategoryMapper;
 import dev.caiovitor.streamingmusic.mapper.PlaylistMapper;
 import dev.caiovitor.streamingmusic.repository.CategoryRepository;
 import dev.caiovitor.streamingmusic.repository.PlaylistRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -123,5 +124,32 @@ public class CategoryService {
                 .map(playlistService::toResponse);
 
         return PageResponseDTO.from(playlistResponseDTO);
+    }
+
+    @Transactional
+    public void updatePlaylist(UUID categoryId,  UpdateCategoryDTO updateCategory) {
+
+        Category category =categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        if(categoryRepository.existsByNameIgnoreCaseAndIdNot(updateCategory.name(),category.getId())){
+            throw new CategoryAlreadyExistsException("Category already exists");
+        }
+
+        String oldKey = null;
+
+
+        if(updateCategory.image() != null){
+            validateImage(updateCategory.image());
+            oldKey = category.getImageKey();
+            category.setImageKey(s3Service.uploadFile(updateCategory.image(), "images"));
+        }
+
+        categoryMapper.updateCategory(updateCategory,category);
+        categoryRepository.save(category);
+
+        if(oldKey != null){
+            s3Service.deleteFile(oldKey);
+        }
     }
 }
