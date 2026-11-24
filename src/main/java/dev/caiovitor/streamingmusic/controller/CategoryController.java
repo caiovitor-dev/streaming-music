@@ -90,4 +90,12 @@ public class CategoryController {
         categoryService.updatePlaylist(categoryId,updateCategory);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{categoryId}/position")
+    public ResponseEntity <Void> updatePosition(@PathVariable UUID categoryId,@Valid @RequestBody UpdateCategoryPositionDTO updateCategoryPosition){
+
+        categoryService.updatePosition(categoryId,updateCategoryPosition.position());
+        return ResponseEntity.noContent().build();
+    }
 }

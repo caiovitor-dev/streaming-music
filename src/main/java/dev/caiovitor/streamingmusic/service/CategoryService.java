@@ -9,6 +9,8 @@ import dev.caiovitor.streamingmusic.mapper.PlaylistMapper;
 import dev.caiovitor.streamingmusic.repository.CategoryRepository;
 import dev.caiovitor.streamingmusic.repository.PlaylistRepository;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -151,5 +153,33 @@ public class CategoryService {
         if(oldKey != null){
             s3Service.deleteFile(oldKey);
         }
+    }
+
+    @Transactional
+    public void updatePosition(UUID categoryId, Integer newPosition) {
+
+        Category category =categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        int total = (int) categoryRepository.count();
+        int oldPosition = category.getPosition();
+
+
+        if(newPosition > total || newPosition < 1 ){
+            return;
+        }
+
+        if(newPosition == oldPosition){
+            return;
+        }
+
+        if(newPosition < oldPosition){
+            categoryRepository.shiftPosition(1,newPosition,oldPosition-1);
+        }
+        else {
+            categoryRepository.shiftPosition( -1, oldPosition +1, newPosition);
+        }
+
+        category.setPosition(newPosition);
     }
 }
