@@ -36,4 +36,13 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     void shiftPosition(@Param("shiftPosition") int shiftPosition,
                        @Param("from") int from ,
                        @Param("to") int to);
+
+
+    @Modifying
+    @Query("""
+            UPDATE Category u
+            SET u.position= u.position - 1
+            WHERE u.position > :position
+            """)
+    void shiftPositionDown(@Param("position") int position);
 }
