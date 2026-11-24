@@ -182,4 +182,21 @@ public class CategoryService {
 
         category.setPosition(newPosition);
     }
+
+    @Transactional
+    public void deleteCategory(UUID categoryId) {
+
+        Category category =categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        int position = category.getPosition();
+
+        categoryRepository.delete(category);
+        categoryRepository.flush();
+        categoryRepository.shiftPositionDown(position);
+
+        s3Service.deleteFile(category.getImageKey());
+
+
+    }
 }

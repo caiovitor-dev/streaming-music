@@ -98,4 +98,12 @@ public class CategoryController {
         categoryService.updatePosition(categoryId,updateCategoryPosition.position());
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID categoryId){
+
+       categoryService.deleteCategory(categoryId);
+       return ResponseEntity.noContent().build();
+    }
 }
