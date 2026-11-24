@@ -12,6 +12,8 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     boolean existsByNameIgnoreCase(String name);
 
+    boolean existsByNameIgnoreCaseAndIdNot(String name, UUID id);
+
     @Query("""
             SELECT COALESCE(MAX(u.position),0) FROM Category u
             """)
