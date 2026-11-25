@@ -33,10 +33,10 @@ public class Artist {
     private User user;
 
     @Column(name = "profile_image_key", columnDefinition = "TEXT")
-    private String profile_image_key;
+    private String profileImageKey;
 
     @Column(name = "banner_image_key", columnDefinition = "TEXT")
-    private String banner_image_key;
+    private String bannerImageKey;
 
     @CreatedDate
     @Column(name = "created_at",nullable = false, updatable = false)
