@@ -334,6 +334,21 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(ArtistAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleArtistAlreadyExists(ArtistAlreadyExistsException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.CONFLICT.value(),
+                        ex.getMessage(),
+                        HttpStatus.CONFLICT.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
 
     private String getPath(WebRequest request){
         return request.getDescription(false).replace("uri=","");
