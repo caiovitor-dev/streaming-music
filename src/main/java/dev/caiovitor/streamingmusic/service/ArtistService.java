@@ -60,6 +60,8 @@ public class ArtistService {
     }
 
 
+
+
     private void validateImage(MultipartFile image){
 
         long maxImageByte = DataSize.ofMegabytes(5).toBytes();
@@ -75,6 +77,12 @@ public class ArtistService {
         if (image.getSize() > maxImageByte){
             throw  new FileSizeExceededException("The image exceeded the 5 MB size limit.");
         }
+
+    }
+
+    public Artist findArtistByUserId(UUID id) {
+       return artistRepository.findByUserId(id)
+                .orElseThrow(() -> new ArtistNotFoundException("Artist not found"));
 
     }
 }
