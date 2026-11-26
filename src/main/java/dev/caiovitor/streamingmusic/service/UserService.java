@@ -35,6 +35,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User findById(UUID userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
     public boolean existsByEmail(String email){
         return userRepository.existsByEmail(email);
     }
