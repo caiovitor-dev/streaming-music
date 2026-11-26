@@ -350,6 +350,22 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(ArtistNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleArtistNotFound(ArtistNotFoundException ex, WebRequest request){
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ErrorResponseDTO(
+                        LocalDateTime.now()
+                        ,HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        HttpStatus.NOT_FOUND.getReasonPhrase(),
+                        getPath(request)
+                )
+        );
+
+    }
+
+
     private String getPath(WebRequest request){
         return request.getDescription(false).replace("uri=","");
     }
