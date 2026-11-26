@@ -26,7 +26,7 @@ public class Song {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist",nullable = false)
+    @JoinColumn(name = "artist_id",nullable = false)
     private Artist artist;
 
     @Column(name = "song_url",nullable = false,columnDefinition = "TEXT")
@@ -37,7 +37,7 @@ public class Song {
 
     @Column(name = "lyrics",nullable = false,columnDefinition = "TEXT")
     private String lyrics;
-    
+
     @CreatedDate
     @Column(name = "created_at",nullable = false,updatable = false)
     private LocalDateTime createdAt;
