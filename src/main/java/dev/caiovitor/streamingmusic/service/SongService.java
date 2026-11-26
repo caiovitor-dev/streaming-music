@@ -30,6 +30,7 @@ public class SongService {
     private final SongRepository songRepository;
     private final SongMapper songMapper;
     private final S3Service s3Service;
+    private final ArtistService artistService;
 
     public Song createSong (SongRequestDTO songRequest, CustomUserDetails userDetails) {
 
@@ -51,7 +52,7 @@ public class SongService {
 
         song.setSongUrl(audio);
         song.setImageUrl(image);
-        song.setUser(userDetails.getUser());
+        song.setArtist(artistService.findArtistByUserId(userDetails.getUser().getId()));
 
         return songRepository.save(song);
     }
