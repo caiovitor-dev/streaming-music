@@ -2,6 +2,8 @@ package dev.caiovitor.streamingmusic.service;
 
 import dev.caiovitor.streamingmusic.dto.CreateArtistDTO;
 import dev.caiovitor.streamingmusic.entity.Artist;
+import dev.caiovitor.streamingmusic.entity.Role;
+import dev.caiovitor.streamingmusic.entity.User;
 import dev.caiovitor.streamingmusic.exception.*;
 import dev.caiovitor.streamingmusic.mapper.ArtistMapper;
 import dev.caiovitor.streamingmusic.repository.ArtistRepository;
@@ -21,16 +23,26 @@ public class ArtistService {
     private final ArtistRepository artistRepository;
     private final ArtistMapper artistMapper;
     private final S3Service s3Service;
+    private final RoleService roleService;
+    private final UserService userService;
 
 
 
+    @Transactional
     public UUID createArtist(CreateArtistDTO createArtist, CustomUserDetails userDetails) {
         if(artistRepository.existsByUserId(userDetails.getUser().getId())){
             throw new ArtistAlreadyExistsException("Artist already exists for this user");
         }
 
         Artist artist = artistMapper.toEntity(createArtist);
-        artist.setUser(userDetails.getUser());
+
+        User user = userService.findById(userDetails.getUser().getId());
+
+        Role role = roleService.findByName("ROLE_ARTIST")
+                .orElseThrow(() -> new RoleNotFoundException("Role Not Found.")) ;
+
+        user.getRoles().add(role);
+        artist.setUser(user);
 
         if (createArtist.profileImage() != null) {
             validateImage(createArtist.profileImage());
@@ -42,9 +54,11 @@ public class ArtistService {
            artist.setBannerImageKey(s3Service.uploadFile(createArtist.bannerImage(), "images"));
         }
 
+
         artistRepository.save(artist);
         return artist.getId();
     }
+
 
     private void validateImage(MultipartFile image){
 
