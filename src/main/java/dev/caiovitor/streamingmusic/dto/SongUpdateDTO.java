@@ -9,10 +9,6 @@ public record SongUpdateDTO(
         @Pattern(regexp = "\\S.*", message = "title must not be blank")
         String title,
 
-        @Size(message = "Artist name can have a maximum of 80 characters.",max = 80)
-        @Pattern(regexp = "\\S.*", message = "artist must not be blank")
-        String artist,
-
         MultipartFile imageSong,
         MultipartFile audioSong
 
