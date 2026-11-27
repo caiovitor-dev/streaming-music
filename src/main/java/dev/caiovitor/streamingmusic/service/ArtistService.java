@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.service;
 
+import dev.caiovitor.streamingmusic.dto.ArtistResponseDTO;
 import dev.caiovitor.streamingmusic.dto.CreateArtistDTO;
 import dev.caiovitor.streamingmusic.entity.Artist;
 import dev.caiovitor.streamingmusic.entity.Role;
@@ -84,5 +85,14 @@ public class ArtistService {
        return artistRepository.findByUserId(id)
                 .orElseThrow(() -> new ArtistNotFoundException("Artist not found"));
 
+    }
+    public ArtistResponseDTO toResponse(Artist artist){
+
+        ArtistResponseDTO dto = artistMapper.toDTO(artist);
+        return dto.withProfileImageUrl(resolveFileUrl(dto.profileImageUrl()));
+    }
+
+    private String resolveFileUrl(String fileKey){
+        return fileKey == null ? null : s3Service.presignedUrl(fileKey).toString();
     }
 }
