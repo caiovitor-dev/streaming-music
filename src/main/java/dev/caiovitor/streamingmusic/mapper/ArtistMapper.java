@@ -1,7 +1,6 @@
 package dev.caiovitor.streamingmusic.mapper;
 
 import dev.caiovitor.streamingmusic.dto.ArtistResponseDTO;
-import dev.caiovitor.streamingmusic.dto.ArtistaResponseDTO;
 import dev.caiovitor.streamingmusic.dto.CreateArtistDTO;
 import dev.caiovitor.streamingmusic.entity.Artist;
 import org.mapstruct.Mapper;
