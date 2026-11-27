@@ -6,20 +6,20 @@ import java.util.UUID;
 public record SongResponseDTO(
         UUID id,
         String title,
-        String artist,
         String songUrl,
         String imageUrl,
+        ArtistaResponseDTO artist,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
 
-    public SongResponseDTO withImageAndAudioUrl(String songUrl,String imageUrl){
+    public SongResponseDTO withImageAndAudioUrl(String songUrl,String imageUrl,ArtistaResponseDTO artist){
         return new SongResponseDTO(
                 id,
                 title,
-                artist,
                 songUrl,
                 imageUrl,
+                artist,
                 createdAt,
                 updatedAt
         );
