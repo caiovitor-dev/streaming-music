@@ -60,16 +60,29 @@ public class SongService {
 
     public PageResponseDTO<SongResponseDTO> findAllSongs(Pageable pageable) {
 
-        Page<SongResponseDTO> content = songRepository.findAll(pageable).map(songMapper::toDTO);
+        Page<SongResponseDTO> content = songRepository.findAll(pageable).map(
+                this::songResponse
+        );
         return PageResponseDTO.from(content);
 
     }
 
-    public SongResponseDTO songResponse(UUID id){
-        Song song = findById(id);
+    public SongResponseDTO songResponse(Song song){
+
+        ArtistResponseDTO response = artistService.toResponse(song.getArtist());
         SongResponseDTO dto = songMapper.toDTO(song);
 
-        return dto.withImageAndAudioUrl(resolveFileUrl(dto.songUrl()),resolveFileUrl(dto.imageUrl()));
+        return dto.withImageAndAudioUrl(resolveFileUrl(dto.songUrl()),resolveFileUrl(dto.imageUrl()),response);
+    }
+
+    public SongResponseDTO songResponse(UUID id){
+
+        Song song = findById(id);
+
+        ArtistResponseDTO response = artistService.toResponse(song.getArtist());
+        SongResponseDTO dto = songMapper.toDTO(song);
+
+        return dto.withImageAndAudioUrl(resolveFileUrl(dto.songUrl()),resolveFileUrl(dto.imageUrl()),response);
     }
 
     public Song findById(UUID id){
@@ -87,12 +100,7 @@ public class SongService {
 
         Page<SongResponseDTO> songResponse = songRepository
                 .findAll(specification,pageable)
-                .map(song -> {
-
-                    SongResponseDTO dto = songMapper.toDTO(song);
-                    return dto.withImageAndAudioUrl(resolveFileUrl(dto.songUrl()),resolveFileUrl(dto.imageUrl()));
-
-                });
+                .map(this::songResponse);
 
         return PageResponseDTO.from(songResponse);
 
