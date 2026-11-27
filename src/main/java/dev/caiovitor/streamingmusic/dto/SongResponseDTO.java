@@ -8,12 +8,12 @@ public record SongResponseDTO(
         String title,
         String songUrl,
         String imageUrl,
-        ArtistaResponseDTO artist,
+        ArtistResponseDTO artist,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
 
-    public SongResponseDTO withImageAndAudioUrl(String songUrl,String imageUrl,ArtistaResponseDTO artist){
+    public SongResponseDTO withImageAndAudioUrl(String songUrl,String imageUrl,ArtistResponseDTO artist){
         return new SongResponseDTO(
                 id,
                 title,

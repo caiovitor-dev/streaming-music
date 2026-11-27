@@ -1,5 +1,6 @@
 package dev.caiovitor.streamingmusic.mapper;
 
+import dev.caiovitor.streamingmusic.dto.ArtistResponseDTO;
 import dev.caiovitor.streamingmusic.dto.ArtistaResponseDTO;
 import dev.caiovitor.streamingmusic.dto.CreateArtistDTO;
 import dev.caiovitor.streamingmusic.entity.Artist;
@@ -15,5 +16,5 @@ public interface ArtistMapper {
     Artist toEntity(CreateArtistDTO createArtist);
 
     @Mapping(target = "profileImageUrl",source = "profileImageKey")
-    ArtistaResponseDTO toDTO(Artist artist);
+    ArtistResponseDTO toDTO(Artist artist);
 }
